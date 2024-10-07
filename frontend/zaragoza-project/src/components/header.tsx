@@ -1,19 +1,46 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Sandwich } from "lucide-react";
+import Link from "next/link";
+import { Button } from "./ui/button";
+
 const Header = () => {
-    return ( <header>
-        <div className="container">
-            <div className="logo">
-                <img alt="Zaragoza Logo" />
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Services</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </nav>
+  return (
+    <header className="bg-gray-900 py-4">
+      <div className="container mx-auto flex flex-wrap items-center justify-between px-4">
+        <div className="flex items-center space-x-4">
+          <Sandwich className="h-6 w-6 text-yellow-400" />
+          <span className="text-xl font-bold text-white">TastyTrove</span>
+          <nav className="hidden space-x-4 sm:flex">
+            <Link
+              href="/recipes"
+              className="text-sm font-medium text-gray-300 hover:text-white"
+            >
+              Recipes
+            </Link>
+            <Link
+              href="/shopping-list"
+              className="text-sm font-medium text-gray-300 hover:text-white"
+            >
+              Shopping List
+            </Link>
+          </nav>
         </div>
-    </header>);
-}
- 
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-black hover:bg-yellow-400"
+          >
+            Log in
+          </Button>
+          <Avatar className="h-8 w-8 ring-2 ring-yellow-400 text-center">
+            <AvatarImage src="/placeholder-user.jpg" alt="User" />
+            <AvatarFallback className="text-yellow-400">U</AvatarFallback>
+          </Avatar>
+        </div>
+      </div>
+    </header>
+  );
+};
+
 export default Header;
