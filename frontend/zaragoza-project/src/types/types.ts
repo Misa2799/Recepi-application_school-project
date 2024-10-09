@@ -12,7 +12,7 @@ export interface category{
     id: number,
     name: string
 }
-
+  
 export interface user{
     id: number,
     username: string,
