@@ -45,7 +45,7 @@ const Header = () => {
                 size="sm"
                 className="text-black hover:bg-yellow-400"
               >
-                Log in
+                Sign In / Sign Up
               </Button>
             </SignInButton>
           </SignedOut>
