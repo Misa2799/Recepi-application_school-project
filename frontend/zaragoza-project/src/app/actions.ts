@@ -1,19 +1,36 @@
-"use server";
+'use server'
 
-import dbConnect from "@/lib/mongodb";
+import dbConnect from '@/lib/mongodb'
+import Recipes from '@/models/recipes'
 
-export async function testDatabaseConnection() {
-  let isConnected = false;
-  try {
-    const mongoClient = await dbConnect();
-    // Send a ping to confirm a successful connection
-    await mongoClient.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!",
-    ); // because this is a server action, the console.log will be outputted to your terminal not in the browser
-    return !isConnected;
-  } catch (e) {
-    console.error(e);
-    return isConnected;
-  }
+
+
+export async function getRecipesList(){
+  return fetch('https://dummyjson.com/recipes')
+  .then(res => res.json())
+  .then(data => console.log(data))
+}
+
+export async function getRecipes() {
+  await dbConnect()
+  const recipeList = await Recipes.find({})
+  return recipeList
+}
+
+export async function getRecipe(id: string) {
+  await dbConnect()
+  const recipe = await Recipes.findById(id)
+  return recipe
+}
+
+export async function addRecipes(title: string) {
+  await dbConnect()
+  const newTask = await Recipes.create({ title })
+  return newTask
+}
+
+export async function deleteRecipes(id: string) {
+  await dbConnect()
+  await Recipes.findByIdAndDelete(id)
+  return { message: 'Task deleted' }
 }
