@@ -41,9 +41,14 @@ export default function RecipesSideBar() {
           {filteredItems.map((item) => (
             <li
               key={item.name}
-              className="flex h-10 justify-between items-center bg-white p-4 border-2 border-gray-900 rounded-lg shadow-sm"
+              className="flex h-16 justify-between items-center bg-white p-4 border-2 border-gray-900 rounded-lg shadow-sm"
             >
-              <span className="font-medium text-gray-900">{item.name}</span>
+              <a
+                href={``}
+                className="font-medium text-gray-900 w-full text-left hover:underline hover:font-bold"
+              >
+                {item.name}
+              </a>
             </li>
           ))}
         </ul>
