@@ -13,12 +13,6 @@ export interface category{
     name: string
 }
 
-export interface user{
-    id: number,
-    username: string,
-    password: string
-}
-
 export interface groceryCart{
     id: number,
     user_id: number,
