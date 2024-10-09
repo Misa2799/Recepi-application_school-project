@@ -14,10 +14,9 @@ export default function Home() {
   // }
 
   return (
-    <div className="flex flex-1 p-4">
+    <div className="flex flex-1 p-4 justify-between">
       <SideBar />
       <RecipesSideBar />
-      Hello
     </div>
   );
 }
