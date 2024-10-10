@@ -2,13 +2,11 @@
 
 import dbConnect from '@/lib/mongodb'
 import Recipes from '@/models/recipes'
-
-
+import { Recipe } from '@/types/types'
 
 export async function getRecipesList(){
-  return fetch('https://dummyjson.com/recipes')
-  .then(res => res.json())
-  .then(data => console.log(data))
+  const response = await fetch('https://dummyjson.com/recipes?limit=10')
+  return response.json()
 }
 
 export async function getRecipes() {
@@ -23,14 +21,14 @@ export async function getRecipe(id: string) {
   return recipe
 }
 
-export async function addRecipes(title: string) {
+export async function addRecipes(recipe: Recipe) {
   await dbConnect()
-  const newTask = await Recipes.create({ title })
-  return newTask
+  const newRecipe = await Recipes.create({ recipe })
+  return newRecipe
 }
 
 export async function deleteRecipes(id: string) {
   await dbConnect()
   await Recipes.findByIdAndDelete(id)
-  return { message: 'Task deleted' }
+  return { message: 'Recipe deleted' }
 }
