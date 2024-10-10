@@ -2,7 +2,7 @@
 import SideBar from "@/components/sideBar";
 import { useEffect, useState } from "react";
 import { getRecipes, addRecipes, deleteRecipes } from '@/app/actions'
-import { recipe } from "@/types/types";
+import { Recipe } from "@/types/types";
 
 export default function Home() {
   // const [ recipes, setRecipes ] = useState<recipe[]>([])
