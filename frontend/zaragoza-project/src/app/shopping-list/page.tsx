@@ -1,13 +1,15 @@
 "use client";
 
-import ItemsList, { Cart } from "@/components/itemsList";
+import ItemsList, { OwnedItems } from "@/components/itemsList";
 import SideBar from "@/components/sideBar";
-import { Button } from "@/components/ui/button";
 import WishList, { Recipe } from "@/components/wishList";
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { deleteRecipes } from "../actions";
+import { log } from "console";
 
-const dummyRecipes: Recipe[] = [
+export const dummyRecipes: Recipe[] = [
   {
     id: 1,
     name: "Classic Margherita Pizza",
@@ -67,16 +69,16 @@ const dummyRecipes: Recipe[] = [
   },
 ];
 
-const dummyCart: Cart = {
+const dummyOwnedItems: OwnedItems = {
   id: 0,
   user_id: "user_2n93xAxryHQ4ioN7J4LCoX9STn0",
   items: [
-    "Pizza dough",
-    "Tomato sauce",
-    "Fresh mozzarella cheese",
-    "Fresh basil leaves",
-    "Olive oil",
-    "Salt and pepper to taste",
+    { name: "Pizza dough", amount: 0 },
+    { name: "Tomato sauce", amount: 0 },
+    { name: "Fresh mozzarella cheese", amount: 1 },
+    { name: "Fresh basil leaves", amount: 1 },
+    { name: "Olive oil", amount: 1 },
+    { name: "Salt and pepper to taste", amount: 1 },
   ],
 };
 
@@ -90,17 +92,29 @@ export default function Page() {
   const [recipes, setRecipes] = useState<Recipe[]>(dummyRecipes);
 
   // get Items to Buy from DB?
-  //const cart = getCart(userId)
-  const [cartItems, setCartItems] = useState(dummyCart.items);
+  // const listItems = getCart(userId)
+  const [items, setItems] = useState(dummyOwnedItems.items);
+  const shoppingList = items.filter((item) => item.amount === 0);
+
+  const router = useRouter();
 
   const viewRecipe = (id: number) => {
-    console.log("View Recipe is clicked");
-    // View Recipe -> display title, image, ingredients, and instructions
+    router.push(`/shopping-list/${id}`);
   };
 
   const addMissingItems = (id: number) => {
     console.log("Add items is clicked");
-    // Add items -> add ingredients that are without checkmark to 'Items to Buy'
+    const recipe = dummyRecipes.find((recipe) => recipe.id === id);
+    const missingItems = recipe?.ingredients.filter((ingredient) => {
+      const ownedItem = items.find((item) => item.name === ingredient);
+      return !ownedItem || ownedItem.amount === 0;
+    });
+    setItems((prevItems) => [
+      ...prevItems,
+      ...missingItems!.map((name) => ({ name, amount: 0 })),
+    ]);
+
+    // update DB
   };
 
   const removeRecipe = (id: number) => {
@@ -111,13 +125,14 @@ export default function Page() {
     );
 
     // delete from DB
+    deleteRecipes(id.toString());
   };
 
   const removeItem = (item: string) => {
     console.log(`Removing ${item}`);
 
-    setCartItems((prevItems) =>
-      prevItems.filter((cartItem) => cartItem !== item)
+    setItems((prevItems) =>
+      prevItems.filter((prevItem) => prevItem.name !== item)
     );
 
     // delete from DB
@@ -125,13 +140,14 @@ export default function Page() {
 
   return (
     <div className="grid grid-cols-12 gap-4">
-      <div id="sideBar" className="col-span-3 p-6">
+      <div id="sideBar" className="col-span-3">
         <SideBar />
       </div>
 
-      <div id="wishList" className="col-span-6 p-6">
+      <div id="wishList" className="col-span-6 py-6">
         <WishList
           recipes={recipes}
+          items={items}
           viewRecipe={viewRecipe}
           addMissingItems={addMissingItems}
           removeRecipe={removeRecipe}
@@ -139,10 +155,7 @@ export default function Page() {
       </div>
 
       <div id="itemsList" className="h-screen col-span-3">
-        <ItemsList
-          cart={{ ...dummyCart, items: cartItems }}
-          removeItem={removeItem}
-        />
+        <ItemsList items={shoppingList} removeItem={removeItem} />
       </div>
     </div>
   );

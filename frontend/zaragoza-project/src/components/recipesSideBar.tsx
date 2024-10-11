@@ -30,7 +30,7 @@ export default function RecipesSideBar() {
   );
 
   return (
-    <div className="flex h-screen bg-gray-900">
+    <div className="flex h-screen">
       <div className="w-72 bg-white p-6">
         <h2 className="text-2xl font-bold mb-6 flex items-center text-yellow-400">
           <Refrigerator className="mr-2" />
