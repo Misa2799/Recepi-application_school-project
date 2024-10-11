@@ -74,11 +74,11 @@ const dummyOwnedItems: OwnedItems = {
   user_id: "user_2n93xAxryHQ4ioN7J4LCoX9STn0",
   items: [
     { name: "Pizza dough", amount: 0 },
-    { name: "Tomato sauce", amount: 0 },
+    // { name: "Tomato sauce", amount: 0 },
     { name: "Fresh mozzarella cheese", amount: 1 },
-    { name: "Fresh basil leaves", amount: 1 },
-    { name: "Olive oil", amount: 1 },
-    { name: "Salt and pepper to taste", amount: 1 },
+    // { name: "Fresh basil leaves", amount: 1 },
+    // { name: "Olive oil", amount: 1 },
+    // { name: "Salt and pepper to taste", amount: 1 },
   ],
 };
 
@@ -94,7 +94,8 @@ export default function Page() {
   // get Items to Buy from DB?
   // const listItems = getCart(userId)
   const [items, setItems] = useState(dummyOwnedItems.items);
-  console.log(dummyOwnedItems.items);
+  const shoppingList = items.filter((item) => item.amount === 0);
+  console.log("shoppingList:", shoppingList);
 
   const router = useRouter();
 
@@ -144,7 +145,7 @@ export default function Page() {
       </div>
 
       <div id="itemsList" className="h-screen col-span-3">
-        <ItemsList items={items} removeItem={removeItem} />
+        <ItemsList items={shoppingList} removeItem={removeItem} />
       </div>
     </div>
   );

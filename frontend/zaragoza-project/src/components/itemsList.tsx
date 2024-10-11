@@ -14,8 +14,6 @@ type ItemsListProps = {
 };
 
 export default function ItemsList({ items, removeItem }: ItemsListProps) {
-  const shoppingList = items.filter((item) => item.amount === 0);
-
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold flex items-center text-yellow-400">
@@ -24,7 +22,7 @@ export default function ItemsList({ items, removeItem }: ItemsListProps) {
       </h2>
 
       <ul className="mt-6 space-y-2">
-        {shoppingList.map((item, index) => (
+        {items.map((item, index) => (
           <li
             key={index}
             className="flex items-center justify-between bg-secondary p-2 rounded"
