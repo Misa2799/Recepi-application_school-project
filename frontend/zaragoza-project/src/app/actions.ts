@@ -2,6 +2,7 @@
 
 import dbConnect from "@/lib/mongodb";
 import Recipes from "@/models/recipes";
+import { Recipe } from "@/types/types";
 
 export async function getRecipesList() {
 	return fetch("https://dummyjson.com/recipes")

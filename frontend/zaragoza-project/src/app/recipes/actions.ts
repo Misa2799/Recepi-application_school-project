@@ -1,17 +1,16 @@
 'use server'
 
 import dbConnect from '@/lib/mongodb'
-import Recipes from '@/models/recipes'
-import { Recipe } from '@/types/types'
+import Wishlist, { WishlistInterface } from '@/models/wishlist'
 
 export async function getWhishlist(id: string) {
     await dbConnect()
-    const recipe = await Recipes.findById(id)
+    const recipe = await Wishlist.findById(id)
     return recipe
   }
   
-  export async function addWhishlist(ingredient: string) {
+  export async function addWhishlist(ingredient: WishlistInterface) {
     await dbConnect()
-    const newRecipe = await Recipes.create({ ingredient })
-    return newRecipe
+    const newWishlist = await Wishlist.create({ ingredient })
+    return newWishlist
   }

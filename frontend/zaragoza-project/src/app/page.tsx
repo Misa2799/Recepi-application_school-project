@@ -2,24 +2,28 @@
 import RecipesSideBar from "@/components/recipesSideBar";
 import SideBar from "@/components/sideBar";
 import { useEffect, useState } from "react";
-import { getRecipes, addRecipes, deleteRecipes } from '@/app/actions'
+import { getRecipesList} from '@/app/actions'
 import { Recipe } from "@/types/types";
+import Header from "@/components/header";
 
 export default function Home() {
-  // const [ recipes, setRecipes ] = useState<recipe[]>([])
-  // useEffect(() => {
-  //   fetchRecipes()
-  // }, [])
+  const [ recipes, setRecipes ] = useState<Recipe[]>([])
+  useEffect(() => {
+    fetchRecipes()
+  }, [])
 
-  // const fetchRecipes = async () => {
-  //   const fetchedTasks = await getRecipes()
-  //   setRecipes(fetchedTasks)
-  // }
+  const fetchRecipes = async () => {
+    const fetchedTasks = await getRecipesList()
+    setRecipes(fetchedTasks.recipes)
+  }
 
   return (
-    <div className="flex flex-1 p-4 justify-between">
-      <SideBar />
-      <RecipesSideBar />
+    <div className="">
+      { recipes.map((recipe) => (
+            <div key={recipe.id}>
+                <h3>{recipe.name}</h3>
+            </div>
+        ))}
     </div>
   );
 }
