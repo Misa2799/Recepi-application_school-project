@@ -30,6 +30,7 @@ export type Recipe = {
 
 type WishListProps = {
   recipes: Recipe[];
+  items: { name: string; amount: number }[];
   viewRecipe: (id: number) => void;
   addMissingItems: (id: number) => void;
   removeRecipe: (id: number) => void;
@@ -37,6 +38,7 @@ type WishListProps = {
 
 export default function WishList({
   recipes,
+  items,
   viewRecipe,
   addMissingItems,
   removeRecipe,
@@ -60,23 +62,31 @@ export default function WishList({
               </div>
               {/* list of ingredients */}
               <div id="ingredients" className="px-4 mt-6 text-gray-900">
-                {recipe.ingredients.map((ingredient, index) => (
-                  <div
-                    key={`${recipe.id}-ingredient-${index}`}
-                    className="flex items-center space-x-2 my-2"
-                  >
-                    <Checkbox
-                      id={`${recipe.id}-ingredient-${index}`}
-                      disabled
-                    />
-                    <label
-                      htmlFor={`${recipe.id}-ingredient-${index}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                {recipe.ingredients.map((ingredient, index) => {
+                  const ownedItem = items.find(
+                    (item) => item.name === ingredient
+                  );
+                  const isChecked = ownedItem ? ownedItem.amount > 0 : false;
+
+                  return (
+                    <div
+                      key={`${recipe.id}-ingredient-${index}`}
+                      className="flex items-center space-x-2 my-2"
                     >
-                      {ingredient}
-                    </label>
-                  </div>
-                ))}
+                      <Checkbox
+                        id={`${recipe.id}-ingredient-${index}`}
+                        checked={isChecked}
+                        disabled
+                      />
+                      <label
+                        htmlFor={`${recipe.id}-ingredient-${index}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {ingredient}
+                      </label>
+                    </div>
+                  );
+                })}
               </div>
 
               <div id="btn" className="flex justify-end mt-6">

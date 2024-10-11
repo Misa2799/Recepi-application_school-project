@@ -95,7 +95,6 @@ export default function Page() {
   // const listItems = getCart(userId)
   const [items, setItems] = useState(dummyOwnedItems.items);
   const shoppingList = items.filter((item) => item.amount === 0);
-  console.log("shoppingList:", shoppingList);
 
   const router = useRouter();
 
@@ -138,6 +137,7 @@ export default function Page() {
       <div id="wishList" className="col-span-6 py-6">
         <WishList
           recipes={recipes}
+          items={items}
           viewRecipe={viewRecipe}
           addMissingItems={addMissingItems}
           removeRecipe={removeRecipe}
