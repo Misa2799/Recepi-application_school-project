@@ -2,12 +2,12 @@
 
 import ItemsList, { Cart } from "@/components/itemsList";
 import SideBar from "@/components/sideBar";
-import { Button } from "@/components/ui/button";
 import WishList, { Recipe } from "@/components/wishList";
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const dummyRecipes: Recipe[] = [
+export const dummyRecipes: Recipe[] = [
   {
     id: 1,
     name: "Classic Margherita Pizza",
@@ -93,9 +93,12 @@ export default function Page() {
   //const cart = getCart(userId)
   const [cartItems, setCartItems] = useState(dummyCart.items);
 
+  const router = useRouter();
+
   const viewRecipe = (id: number) => {
     console.log("View Recipe is clicked");
     // View Recipe -> display title, image, ingredients, and instructions
+    router.push(`/shopping-list/${id}`);
   };
 
   const addMissingItems = (id: number) => {
@@ -125,11 +128,11 @@ export default function Page() {
 
   return (
     <div className="grid grid-cols-12 gap-4">
-      <div id="sideBar" className="col-span-3 p-6">
+      <div id="sideBar" className="col-span-3">
         <SideBar />
       </div>
 
-      <div id="wishList" className="col-span-6 p-6">
+      <div id="wishList" className="col-span-6 py-6">
         <WishList
           recipes={recipes}
           viewRecipe={viewRecipe}
