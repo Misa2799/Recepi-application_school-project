@@ -1,19 +1,28 @@
-export interface recipe{
-    id: number,
-    name: string,
-    description: string,
-    ingredients: string,
-    steps: string,
-    image: string,
-    category: string
-}
+export interface Recipe {
+    id: number;
+    name: string;
+    ingredients: string[];
+    instructions: string[];
+    prepTimeMinutes: number;
+    cookTimeMinutes: number;
+    servings: number;
+    difficulty: string;
+    cuisine: string;
+    caloriesPerServing: number;
+    tags: string[];
+    userId: number;
+    image: string;
+    rating: number;
+    reviewCount: number;
+    mealType: string[];
+  }
 
-export interface category{
+export interface Category{
     id: number,
     name: string
 }
 
-export interface groceryCart{
+export interface GroceryCart{
     id: number,
     user_id: number,
     recipe_id: number,

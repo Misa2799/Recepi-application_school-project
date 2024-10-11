@@ -25,14 +25,14 @@ export async function getRecipe(id: string) {
 	return recipe;
 }
 
-export async function addRecipes(title: string) {
-	await dbConnect();
-	const newTask = await Recipes.create({ title });
-	return newTask;
+export async function addRecipes(recipe: Recipe) {
+  await dbConnect()
+  const newRecipe = await Recipes.create({ recipe })
+  return newRecipe
 }
 
 export async function deleteRecipes(id: string) {
-	await dbConnect();
-	await Recipes.findByIdAndDelete(id);
-	return { message: "Task deleted" };
+  await dbConnect()
+  await Recipes.findByIdAndDelete(id)
+  return { message: 'Recipe deleted' }
 }
