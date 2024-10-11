@@ -74,11 +74,11 @@ const dummyOwnedItems: OwnedItems = {
   user_id: "user_2n93xAxryHQ4ioN7J4LCoX9STn0",
   items: [
     { name: "Pizza dough", amount: 0 },
-    // { name: "Tomato sauce", amount: 0 },
+    { name: "Tomato sauce", amount: 0 },
     { name: "Fresh mozzarella cheese", amount: 1 },
-    // { name: "Fresh basil leaves", amount: 1 },
-    // { name: "Olive oil", amount: 1 },
-    // { name: "Salt and pepper to taste", amount: 1 },
+    { name: "Fresh basil leaves", amount: 1 },
+    { name: "Olive oil", amount: 1 },
+    { name: "Salt and pepper to taste", amount: 1 },
   ],
 };
 
@@ -104,7 +104,17 @@ export default function Page() {
 
   const addMissingItems = (id: number) => {
     console.log("Add items is clicked");
-    // Add items -> add ingredients that are without checkmark to 'Items to Buy'
+    const recipe = dummyRecipes.find((recipe) => recipe.id === id);
+    const missingItems = recipe?.ingredients.filter((ingredient) => {
+      const ownedItem = items.find((item) => item.name === ingredient);
+      return !ownedItem || ownedItem.amount === 0;
+    });
+    setItems((prevItems) => [
+      ...prevItems,
+      ...missingItems!.map((name) => ({ name, amount: 0 })),
+    ]);
+
+    // update DB
   };
 
   const removeRecipe = (id: number) => {
