@@ -1,11 +1,13 @@
 "use client";
 
-import ItemsList, { Cart } from "@/components/itemsList";
+import ItemsList, { OwnedItems } from "@/components/itemsList";
 import SideBar from "@/components/sideBar";
 import WishList, { Recipe } from "@/components/wishList";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { deleteRecipes } from "../actions";
+import { log } from "console";
 
 export const dummyRecipes: Recipe[] = [
   {
@@ -67,16 +69,16 @@ export const dummyRecipes: Recipe[] = [
   },
 ];
 
-const dummyCart: Cart = {
+const dummyOwnedItems: OwnedItems = {
   id: 0,
   user_id: "user_2n93xAxryHQ4ioN7J4LCoX9STn0",
   items: [
-    "Pizza dough",
-    "Tomato sauce",
-    "Fresh mozzarella cheese",
-    "Fresh basil leaves",
-    "Olive oil",
-    "Salt and pepper to taste",
+    { name: "Pizza dough", amount: 0 },
+    { name: "Tomato sauce", amount: 0 },
+    { name: "Fresh mozzarella cheese", amount: 1 },
+    { name: "Fresh basil leaves", amount: 1 },
+    { name: "Olive oil", amount: 1 },
+    { name: "Salt and pepper to taste", amount: 1 },
   ],
 };
 
@@ -90,14 +92,13 @@ export default function Page() {
   const [recipes, setRecipes] = useState<Recipe[]>(dummyRecipes);
 
   // get Items to Buy from DB?
-  //const cart = getCart(userId)
-  const [cartItems, setCartItems] = useState(dummyCart.items);
+  // const listItems = getCart(userId)
+  const [items, setItems] = useState(dummyOwnedItems.items);
+  console.log(dummyOwnedItems.items);
 
   const router = useRouter();
 
   const viewRecipe = (id: number) => {
-    console.log("View Recipe is clicked");
-    // View Recipe -> display title, image, ingredients, and instructions
     router.push(`/shopping-list/${id}`);
   };
 
@@ -114,13 +115,14 @@ export default function Page() {
     );
 
     // delete from DB
+    deleteRecipes(id.toString());
   };
 
   const removeItem = (item: string) => {
     console.log(`Removing ${item}`);
 
-    setCartItems((prevItems) =>
-      prevItems.filter((cartItem) => cartItem !== item)
+    setItems((prevItems) =>
+      prevItems.filter((prevItem) => prevItem.name !== item)
     );
 
     // delete from DB
@@ -142,10 +144,7 @@ export default function Page() {
       </div>
 
       <div id="itemsList" className="h-screen col-span-3">
-        <ItemsList
-          cart={{ ...dummyCart, items: cartItems }}
-          removeItem={removeItem}
-        />
+        <ItemsList items={items} removeItem={removeItem} />
       </div>
     </div>
   );
