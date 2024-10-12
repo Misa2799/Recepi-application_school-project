@@ -1,6 +1,8 @@
 "use client";
 
+import FridgeSideBar from "@/components/sideBar";
 import React, { useEffect, useState } from "react";
+import { getRecipesList } from "../actions";
 
 interface Recipe {
 	id: number;
@@ -19,18 +21,13 @@ const Recipes = () => {
 	const [filterType, setFilterType] = useState<string | null>(null);
 
 	useEffect(() => {
-		const fetchRecipes = async () => {
-			try {
-				const response = await fetch("https://dummyjson.com/recipes");
-				const data = await response.json();
-				setRecipes(data.recipes);
-			} catch (error) {
-				console.error("Error fetching recipes:", error);
-			}
-		};
-
-		fetchRecipes();
-	}, []);
+		fetchRecipes()
+	  }, [])
+	
+	const fetchRecipes = async () => {
+		const fetchedTasks = await getRecipesList()
+		setRecipes(fetchedTasks.recipes)
+	  }
 
 	const addRecipe = (recipe: Recipe) => {
 		setSavedRecipes((prev) => [...prev, recipe]);
@@ -55,8 +52,8 @@ const Recipes = () => {
 	return (
 		<div className="flex gap-4 p-4">
 			{/* Espacio reservado para la sección de la izquierda */}
-			<div className="w-1/5 hidden lg:block bg-gray-100 p-4">
-				<p className="text-gray-500">Left section placeholder</p>
+			<div id="sideBar" className="col-span-3">
+				<FridgeSideBar />
 			</div>
 			{/* Contenido principal */}
 			<div className="flex-1">
