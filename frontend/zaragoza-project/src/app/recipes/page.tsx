@@ -30,7 +30,6 @@ const Recipes = () => {
 		  return
 		}
 		const fetchedWishList = await getWishlist(user.userId)
-		console.log(fetchedWishList)
 		setSavedRecipes(fetchedWishList)
 	  }
 

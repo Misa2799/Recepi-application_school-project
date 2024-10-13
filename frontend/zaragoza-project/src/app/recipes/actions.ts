@@ -14,7 +14,6 @@ export async function getWishlist(id: string) {
             newWishlist.push(recipe)
         })
     }
-    console.log(newWishlist)
     return newWishlist
   }
   
