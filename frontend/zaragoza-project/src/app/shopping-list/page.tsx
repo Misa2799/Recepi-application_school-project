@@ -1,13 +1,13 @@
 "use client";
 
 import ItemsList, { OwnedItems } from "@/components/itemsList";
-import SideBar from "@/components/sideBar";
-import WishList, { Recipe } from "@/components/wishList";
+import FridgeSideBar from "@/components/sideBar";
+import WishList from "@/components/wishList";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { deleteRecipes } from "../actions";
-import { log } from "console";
+import { Recipe } from "@/types/types";
 
 export const dummyRecipes: Recipe[] = [
   {
@@ -141,7 +141,7 @@ export default function Page() {
   return (
     <div className="grid grid-cols-12 gap-4">
       <div id="sideBar" className="col-span-3">
-        <SideBar />
+        <FridgeSideBar />
       </div>
 
       <div id="wishList" className="col-span-6 py-6">

@@ -18,7 +18,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
-export default function SideBar() {
+export default function FridgeSideBar() {
   const [foodItems, setFoodItems] = useState([
     { name: "Milk", quantity: 1 },
     { name: "Eggs", quantity: 12 },

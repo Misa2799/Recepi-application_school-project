@@ -1,40 +1,50 @@
 "use client";
 
+import FridgeSideBar from "@/components/sideBar";
 import React, { useEffect, useState } from "react";
+import { getRecipesList } from "../actions";
+import { useAuth } from "@clerk/nextjs";
+import { Recipe } from "@/types/types";
+import { addWishlist, getWishlist } from "./actions";
 
-interface Recipe {
-	id: number;
-	name: string;
-	image: string;
-	cuisine: string;
-	prepTimeMinutes: number;
-	cookTimeMinutes: number;
-	servings: number;
-}
 
 const Recipes = () => {
 	const [recipes, setRecipes] = useState<Recipe[]>([]);
 	const [savedRecipes, setSavedRecipes] = useState<Recipe[]>([]);
 	const [filteredCuisine, setFilteredCuisine] = useState<string | null>(null);
 	const [filterType, setFilterType] = useState<string | null>(null);
+	const user = useAuth()
 
 	useEffect(() => {
-		const fetchRecipes = async () => {
-			try {
-				const response = await fetch("https://dummyjson.com/recipes");
-				const data = await response.json();
-				setRecipes(data.recipes);
-			} catch (error) {
-				console.error("Error fetching recipes:", error);
+		fetchRecipes()
+		fetchWishlist()
+	  }, [])
+	
+	const fetchRecipes = async () => {
+		const fetchedRecipes= await getRecipesList()
+		setRecipes(fetchedRecipes.recipes)
+	  }
+
+	  const fetchWishlist = async () => {
+		if (!user.userId) {
+		  return
+		}
+		const fetchedWishList = await getWishlist(user.userId)
+		setSavedRecipes(fetchedWishList)
+	  }
+
+	  const addRecipe = async (recipe: Recipe) => {
+		if (user.userId) {
+			const success = await addWishlist(user.userId, [recipe.id.toString()])
+			if (success) {
+				setSavedRecipes((prev) => [...prev, recipe])
+			} else {
+				console.error("Failed to add to wishlist")
 			}
-		};
-
-		fetchRecipes();
-	}, []);
-
-	const addRecipe = (recipe: Recipe) => {
-		setSavedRecipes((prev) => [...prev, recipe]);
-	};
+		} else {
+			console.error("User ID is not available")
+		}
+	}
 
 	const removeRecipe = (id: number) => {
 		setSavedRecipes((prev) => prev.filter((recipe) => recipe.id !== id));
@@ -55,8 +65,8 @@ const Recipes = () => {
 	return (
 		<div className="flex gap-4 p-4">
 			{/* Espacio reservado para la sección de la izquierda */}
-			<div className="w-1/5 hidden lg:block bg-gray-100 p-4">
-				<p className="text-gray-500">Left section placeholder</p>
+			<div id="sideBar" className="col-span-3">
+				<FridgeSideBar />
 			</div>
 			{/* Contenido principal */}
 			<div className="flex-1">

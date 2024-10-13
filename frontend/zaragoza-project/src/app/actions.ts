@@ -14,6 +14,16 @@ export async function getRecipesList() {
 		});
 }
 
+export async function getRecipeById(id: string) {
+	return fetch(`https://dummyjson.com/recipes/${id}`)
+		.then((res) => res.json())
+		.then((data) => data)
+		.catch((error) => {
+			console.error("Error fetching recipe:", error);
+			return {};
+		});
+}
+
 export async function getRecipes() {
 	await dbConnect();
 	const recipeList = await Recipes.find({});
