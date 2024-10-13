@@ -1,25 +1,23 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface Ingredient {
+export interface IngredientInterface {
   name: string;
   amount: number;
 }
 
-const IngredientSchema = new Schema<Ingredient>({
+const IngredientSchema = new Schema<IngredientInterface>({
   name: { type: String, required: true },
   amount: { type: Number, required: true },
 });
 
-interface Inventory extends Document {
-  id?: string;
+interface InventoryInterface extends Document {
   userId: string;
-  ingredient: Ingredient[];
+  ingredient: IngredientInterface[];
 }
 
-const InventorySchema = new Schema<Inventory>({
-  id: { type: String, required: false },
+const InventorySchema = new Schema<InventoryInterface>({
   userId: { type: String, required: true },
   ingredient: { type: [IngredientSchema], required: true },
 });
 
-export default mongoose.models.Inventory || mongoose.model<Inventory>('Inventory', InventorySchema);
+export default mongoose.models.Inventory || mongoose.model<InventoryInterface>('Inventory', InventorySchema);

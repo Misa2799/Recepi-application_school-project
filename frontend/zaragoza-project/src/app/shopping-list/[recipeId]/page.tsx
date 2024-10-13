@@ -1,12 +1,12 @@
 "use client";
 
-import { Recipe } from "@/components/wishList";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { dummyRecipes } from "../page";
 import { getRecipe } from "@/app/actions";
-import SideBar from "@/components/sideBar";
+import FridgeSideBar from "@/components/fridgeSideBar";
 import RecipesSideBar from "@/components/recipesSideBar";
+import { Recipe } from "@/types/types";
 
 export default function RecipeDetail() {
   const params = useParams();
@@ -35,7 +35,7 @@ export default function RecipeDetail() {
     <>
       <div className="grid grid-cols-12 gap-4">
         <div id="sideBar" className="col-span-3">
-          <SideBar />
+          <FridgeSideBar />
         </div>
 
         <div id="recipe" className="col-span-6 py-6 text-gray-900">

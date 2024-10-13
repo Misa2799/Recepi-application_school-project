@@ -1,6 +1,6 @@
 "use client";
 import RecipesSideBar from "@/components/recipesSideBar";
-import SideBar from "@/components/sideBar";
+import FridgeSideBar from "@/components/fridgeSideBar";
 import { useEffect, useState } from "react";
 import { getRecipesList} from '@/app/actions'
 import { Recipe } from "@/types/types";

@@ -1,7 +1,7 @@
 "use client";
 
 import ItemsList, { OwnedItems } from "@/components/itemsList";
-import FridgeSideBar from "@/components/sideBar";
+import FridgeSideBar from "@/components/fridgeSideBar";
 import WishList from "@/components/wishList";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";

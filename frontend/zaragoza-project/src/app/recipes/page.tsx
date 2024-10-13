@@ -1,6 +1,6 @@
 "use client";
 
-import FridgeSideBar from "@/components/sideBar";
+import FridgeSideBar from "@/components/fridgeSideBar";
 import React, { useEffect, useState } from "react";
 import { getRecipesList } from "../actions";
 import { useAuth } from "@clerk/nextjs";

@@ -4,6 +4,7 @@ import dbConnect from '@/lib/mongodb'
 import Wishlist from '@/models/wishlist'
 import { getRecipeById } from '../actions'
 import { Recipe } from '@/types/types'
+import Inventory from '@/models/inventory'
 
 export async function getWishlist(id: string) {
     await dbConnect()
@@ -33,3 +34,10 @@ export async function getWishlist(id: string) {
       return newWishlist? true:false
     }
 }
+
+export const fetchFridgeItems = async (userId: string,) => {
+  await dbConnect();
+  const inventoryList = await Inventory.findOne({ userId });
+  console.log(inventoryList);
+  return inventoryList;
+};
