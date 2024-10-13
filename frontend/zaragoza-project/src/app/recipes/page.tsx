@@ -3,35 +3,49 @@
 import FridgeSideBar from "@/components/sideBar";
 import React, { useEffect, useState } from "react";
 import { getRecipesList } from "../actions";
+import { useAuth } from "@clerk/nextjs";
+import { Recipe } from "@/types/types";
+import { addWishlist, getWishlist } from "./actions";
 
-interface Recipe {
-	id: number;
-	name: string;
-	image: string;
-	cuisine: string;
-	prepTimeMinutes: number;
-	cookTimeMinutes: number;
-	servings: number;
-}
 
 const Recipes = () => {
 	const [recipes, setRecipes] = useState<Recipe[]>([]);
 	const [savedRecipes, setSavedRecipes] = useState<Recipe[]>([]);
 	const [filteredCuisine, setFilteredCuisine] = useState<string | null>(null);
 	const [filterType, setFilterType] = useState<string | null>(null);
+	const user = useAuth()
 
 	useEffect(() => {
 		fetchRecipes()
+		fetchWishlist()
 	  }, [])
 	
 	const fetchRecipes = async () => {
-		const fetchedTasks = await getRecipesList()
-		setRecipes(fetchedTasks.recipes)
+		const fetchedRecipes= await getRecipesList()
+		setRecipes(fetchedRecipes.recipes)
 	  }
 
-	const addRecipe = (recipe: Recipe) => {
-		setSavedRecipes((prev) => [...prev, recipe]);
-	};
+	  const fetchWishlist = async () => {
+		if (!user.userId) {
+		  return
+		}
+		const fetchedWishList = await getWishlist(user.userId)
+		console.log(fetchedWishList)
+		setSavedRecipes(fetchedWishList)
+	  }
+
+	  const addRecipe = async (recipe: Recipe) => {
+		if (user.userId) {
+			const success = await addWishlist(user.userId, [recipe.id.toString()])
+			if (success) {
+				setSavedRecipes((prev) => [...prev, recipe])
+			} else {
+				console.error("Failed to add to wishlist")
+			}
+		} else {
+			console.error("User ID is not available")
+		}
+	}
 
 	const removeRecipe = (id: number) => {
 		setSavedRecipes((prev) => prev.filter((recipe) => recipe.id !== id));
