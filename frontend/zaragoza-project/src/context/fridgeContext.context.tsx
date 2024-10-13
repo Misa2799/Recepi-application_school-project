@@ -1,17 +1,16 @@
 'use client'
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import Inventory, { IngredientInterface } from '@/models/inventory';
-import dbConnect from '@/lib/mongodb';
 import { useAuth } from '@clerk/nextjs';
 import { fetchFridgeItems } from '@/app/recipes/actions';
+import { IngredientInterface } from '@/models/inventory';
 
-const initialState ={
+const initialState = {
   fridgeItems: [],
   setFridgeItems: () => {},
   addFridgeItem: () => {},
   updateFridgeItem: () => {},
   removeFridgeItem: () => {},
-}
+};
 
 interface FridgeContextType {
   fridgeItems: IngredientInterface[];
@@ -21,36 +20,40 @@ interface FridgeContextType {
   removeFridgeItem: (name: string) => void;
 }
 
-const FridgeContext = createContext<FridgeContextType >(initialState);
+const FridgeContext = createContext<FridgeContextType>(initialState);
 
 export const FridgeProvider = ({ children }: { children: ReactNode }) => {
   const [fridgeItems, setFridgeItems] = useState<IngredientInterface[]>([]);
-  const user = useAuth();
-  
+  const { userId } = useAuth();
+
   useEffect(() => {
-    fetchFridge()
-  }, []);
+    fetchFridge();
+  }, [userId]);
 
   const fetchFridge = async () => {
-		if (!user.userId) {
-		  return
-		}
-		const fetchedFridge = await fetchFridgeItems(user.userId)
-		setFridgeItems(fetchedFridge)
-	  }
+    if (!userId) {
+      return;
+    }
+    const fetchedFridge = await fetchFridgeItems(userId);
+    if (fetchedFridge) {
+      setFridgeItems(fetchedFridge);
+    }
+  };
 
   const addFridgeItem = (item: IngredientInterface) => {
     setFridgeItems((prevItems) => [...prevItems, item]);
-    // Update DB
   };
 
   const updateFridgeItem = (name: string, amount: number) => {
+    if (amount <= 0) {
+      removeFridgeItem(name);
+      return;
+    }
     setFridgeItems((prevItems) =>
       prevItems.map((item) =>
         item.name === name ? { ...item, amount } : item
       )
     );
-    // Update DB
   };
 
   const removeFridgeItem = (name: string) => {
