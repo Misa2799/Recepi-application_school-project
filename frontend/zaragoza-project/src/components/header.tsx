@@ -1,8 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Sandwich } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 const Header = () => {
   return (
@@ -10,7 +9,9 @@ const Header = () => {
       <div className="container mx-auto flex flex-wrap items-center justify-between px-4">
         <div className="flex items-center space-x-4">
           <Sandwich className="h-6 w-6 text-yellow-400" />
-          <span className="text-xl font-bold text-white">TastyTrove</span>
+          <a href="/">
+            <span className="text-xl font-bold text-white">TastyTrove</span>
+          </a>
           <nav className="hidden space-x-4 sm:flex">
             <Link
               href="/recipes"
