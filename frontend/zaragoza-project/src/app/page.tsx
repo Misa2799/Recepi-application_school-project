@@ -1,10 +1,20 @@
 "use client";
 
 import { getRecipesList } from "@/app/actions";
-import { ChevronLeft, ChevronRight, User } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const recipeCategories = ["All", "Breakfast", "Lunch", "Dinner", "Dessert"];
+const recipeCategories = [
+  "All",
+  "Breakfast",
+  "Lunch",
+  "Dinner",
+  "Dessert",
+  "Snack",
+  "Side Dish",
+  "Appetizer",
+  "Beverage",
+];
 
 type Recipe = {
   id: number;
@@ -28,8 +38,24 @@ export default function HomePage() {
         : recipes.filter((recipe: { mealType: string | string[] }) =>
             recipe.mealType.includes(currentCategory)
           );
+    const uniqueRecipes: Recipe[] = [];
+    const seenMealTypes = new Set();
 
-    setRecipesData(filteredRecipes);
+    filteredRecipes.forEach(
+      (recipe: { id: any; name: any; image: any; mealType: any }) => {
+        const { id, name, image, mealType } = recipe;
+
+        if (seenMealTypes.has(mealType)) {
+          return;
+        }
+        if (id !== undefined && name && image) {
+          uniqueRecipes.push({ id, name, image, mealType });
+          seenMealTypes.add(mealType);
+        }
+      }
+    );
+
+    setRecipesData(uniqueRecipes);
     setCurrentIndex(0);
   };
 
@@ -43,60 +69,38 @@ export default function HomePage() {
 
   const prevSlide = () => {
     setCurrentIndex(
-      (prevIndex) => (prevIndex - 1 + recipesData.length) % recipesData.length
+      (prevIndex) => prevIndex - 1 + recipesData.length + recipesData.length
     );
   };
   return (
     <div className="min-h-screen bg-gray-100">
-      <header className="bg-gray-900 text-white p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <span className="text-2xl font-bold">🍽 TastyTrove</span>
-            <nav>
-              <ul className="flex space-x-4">
-                <li>
-                  <a href="#" className="hover:text-gray-300">
-                    Recipes
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-gray-300">
-                    Shopping List
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-            <User className="w-5 h-5" />
-          </div>
-        </div>
-      </header>
-
       <main className="container mx-auto mt-8 px-4">
         <h1 className="text-3xl font-bold mb-6">Explore New Recipes</h1>
 
         <div className="relative mb-8">
           <div className="overflow-hidden rounded-lg shadow-lg">
-            <div className="flex">
-              {[0, 1, 2, 3].map((offset) => {
-                const index = (currentIndex + offset) % recipesData.length;
-                if (recipesData.length === 0 || index >= recipesData.length) {
-                  return null;
+            <div
+              className={`flex ${
+                recipesData.length < 4 ? "justify-center" : ""
+              }`}
+            >
+              {Array.from({ length: Math.min(4, recipesData.length) }).map(
+                (_, offset) => {
+                  const index = (currentIndex + offset) % recipesData.length;
+                  return (
+                    <div key={recipesData[index].id} className="w-1/4 p-2">
+                      <img
+                        src={recipesData[index].image}
+                        alt={recipesData[index].name}
+                        className="w-full h-48 object-cover rounded-lg"
+                      />
+                      <h2 className="mt-2 text-center text-sm font-semibold">
+                        {recipesData[index].name}
+                      </h2>
+                    </div>
+                  );
                 }
-                return (
-                  <div key={recipesData[index].id} className="w-1/4 p-2">
-                    <img
-                      src={recipesData[index].image}
-                      alt={recipesData[index].name}
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
-                    <h2 className="mt-2 text-center text-sm font-semibold">
-                      {recipesData[index].name}
-                    </h2>
-                  </div>
-                );
-              })}
+              )}
             </div>
           </div>
           <button
