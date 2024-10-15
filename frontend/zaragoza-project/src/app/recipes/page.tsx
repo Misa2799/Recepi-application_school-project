@@ -1,11 +1,12 @@
 "use client";
 
-import FridgeSideBar from "@/components/sideBar";
+import FridgeSideBar from "@/components/fridgeSideBar";
 import React, { useEffect, useState } from "react";
 import { getRecipesList } from "../actions";
 import { useAuth } from "@clerk/nextjs";
 import { Recipe } from "@/types/types";
 import { addWishlist, getWishlist } from "./actions";
+import RecipesSideBar from "@/components/recipesSideBar";
 
 
 const Recipes = () => {
@@ -210,8 +211,8 @@ const Recipes = () => {
 				</div>
 			</div>
 			{/* Sección de "My Recipes" fija a la derecha con altura fija */}
-			<div className="w-1/5 bg-gray-100 p-4 rounded sticky top-4 h-[300px] overflow-y-auto">
-				<h3 className="font-bold mb-2">My Recipes</h3>
+			<div className="col-span-3">
+				{/*<h3 className="font-bold mb-2">My Recipes</h3>
 				<ul>
 					{savedRecipes.map((recipe) => (
 						<li key={recipe.id} className="flex justify-between items-center">
@@ -221,7 +222,8 @@ const Recipes = () => {
 							</button>
 						</li>
 					))}
-				</ul>
+				</ul>*/}
+				<RecipesSideBar/>
 			</div>
 		</div>
 	);

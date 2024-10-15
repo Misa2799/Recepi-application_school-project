@@ -1,83 +1,44 @@
 "use client";
 
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { CalendarIcon, Minus, Plus, Refrigerator } from "lucide-react";
-import { useState } from "react";
-import { Button } from "./ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { useFridge } from '@/context/fridgeContext.context';
+import { IngredientInterface } from '@/models/inventory';
+import { CalendarIcon, Minus, Plus, Refrigerator, Trash } from 'lucide-react';
+import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
+import { Input } from './ui/input';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Button } from './ui/button';
+import { Label } from './ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Calendar } from './ui/calendar';
 
 export default function FridgeSideBar() {
-  const [foodItems, setFoodItems] = useState([
-    { name: "Milk", quantity: 1 },
-    { name: "Eggs", quantity: 12 },
-    { name: "Cheese", quantity: 2 },
-    { name: "Yogurt", quantity: 3 },
-  ]);
+  const { fridgeItems, addFridgeItem, updateFridgeItem, removeFridgeItem } = useFridge();
   const [searchTerm, setSearchTerm] = useState("");
-  const [newFoodItem, setNewFoodItem] = useState("");
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [price, setPrice] = useState(0);
+  const [filteredItems, setFilteredItems] = useState<IngredientInterface[]>([]);
   const [expiry, setExpiry] = useState<Date | undefined>(undefined);
+	const [open, setOpen] = useState(false);
 
-  const filteredItems = foodItems.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // const handleAdd = () => {
-  //   if (newFoodItem && !foodItems.includes(newFoodItem)) {
-  //     setFoodItems([...foodItems, newFoodItem]);
-  //     setNewFoodItem("");
-  //   }
-  // };
-
-  //   const updateQuantity = (index: number, change: number) => {
-  //     const newIngredients = [...foodItems];
-  //     newIngredients[index].quantity = Math.max(
-  //       0,
-  //       newIngredients[index].quantity + change
-  //     );
-  const updateQuantity = (index: number, change: number) => {
-    const newIngredients = [...foodItems];
-    newIngredients[index].quantity += change;
-
-    if (newIngredients[index].quantity <= 0) {
-      newIngredients.splice(index, 1);
+  useEffect(() => {
+    if (fridgeItems) {
+      setFilteredItems(fridgeItems.filter((item) =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
     }
-    setFoodItems(newIngredients);
-  };
-  // const handleAdd = () => {
-  //   if (newFoodItem) {
-  //     setFoodItems([...foodItems, { name: newFoodItem, quantity: 1 }]);
-  //     setNewFoodItem("");
-  //   }
-  // };
+  }, [fridgeItems, searchTerm]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log({ name, quantity, expiry });
     if (name) {
-      setFoodItems([...foodItems, { name, quantity }]);
+      addFridgeItem({ name, amount: quantity });
       setName("");
       setQuantity(1);
-      setPrice(0);
       setExpiry(undefined);
+      setOpen(false);
     }
-    //   console.log({ name, quantity, price, expiry });
-    // };
-    // const handleDelete = () => {
-    //   console.log("Delete button clicked");
   };
 
   return (
@@ -95,7 +56,7 @@ export default function FridgeSideBar() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Dialog>
+          <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button variant="outline">Add</Button>
             </DialogTrigger>
@@ -139,23 +100,6 @@ export default function FridgeSideBar() {
                   </div>
                 </div>
               </div>
-              <div className="items-center gap-4">
-                <Label htmlFor="price" className="text-yellow-700">
-                  Price
-                </Label>
-                <div className="flex text-right">
-                  <Input
-                    id="price"
-                    type="number"
-                    value={price}
-                    onChange={(e) => setPrice(parseFloat(e.target.value))}
-                    className="text-left border-yellow-300 focus:border-yellow-500"
-                    required
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-              </div>
               <div>
                 <Label htmlFor="expiry" className="text-yellow-700">
                   Expiry
@@ -185,21 +129,16 @@ export default function FridgeSideBar() {
                 </Popover>
               </div>
               <DialogFooter>
-                <Button
-                  type="button"
-                  className="w-full bg-yellow-500 hover:bg-yellow-700 text-white"
-                  onClick={handleSubmit}
-                >
-                  Add to Fridge
-                </Button>
+                  <Button
+                    type="button"
+                    className="w-full bg-yellow-500 hover:bg-yellow-700 text-white"
+                    onClick={handleSubmit}
+                  >
+                    Add to Fridge
+                  </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
-
-          {/* <Button variant="outline" onClick={handleAdd}>
-            <PlusCircle className="h-4 w-4" />
-            <span className="sr-only">Add</span>
-          </Button> */}
         </div>
         <ul className="space-y-2">
           {filteredItems.map((foodItem, index) => (
@@ -212,19 +151,26 @@ export default function FridgeSideBar() {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => updateQuantity(index, -1)}
+                  onClick={() => updateFridgeItem(foodItem.name, foodItem.amount - 1)}
                 >
                   <Minus className="h-4 w-4" />
                   <span className="sr-only">Decrease</span>
                 </Button>
-                <span className="w-8 text-center">{foodItem.quantity}</span>
+                <span className="w-8 text-center">{foodItem.amount}</span>
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => updateQuantity(index, 1)}
+                  onClick={() => updateFridgeItem(foodItem.name, foodItem.amount + 1)}
                 >
                   <Plus className="h-4 w-4" />
                   <span className="sr-only">Increase</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => removeFridgeItem(foodItem.name)}
+                > 
+                  <Trash className="h-4 w-4" />
                 </Button>
               </div>
             </li>

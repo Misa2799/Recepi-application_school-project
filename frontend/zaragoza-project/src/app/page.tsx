@@ -1,8 +1,8 @@
 "use client";
 
-import { getRecipesList } from "@/app/actions";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
+import { getRecipesList} from '@/app/actions'
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const recipeCategories = [
   "All",

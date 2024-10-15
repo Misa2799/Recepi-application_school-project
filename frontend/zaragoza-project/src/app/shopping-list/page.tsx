@@ -1,7 +1,7 @@
 "use client";
 
 import ItemsList, { OwnedItems } from "@/components/itemsList";
-import FridgeSideBar from "@/components/sideBar";
+import FridgeSideBar from "@/components/fridgeSideBar";
 import WishList from "@/components/wishList";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -86,13 +86,8 @@ export default function Page() {
   const { userId } = useAuth();
   console.log("userId: ", userId);
 
-  // get all recipes that are saved from DB
-  // -> get a Wish-list table? based on userId
-  // const wishList = getRecipe(userId)
   const [recipes, setRecipes] = useState<Recipe[]>(dummyRecipes);
 
-  // get Items to Buy from DB?
-  // const listItems = getCart(userId)
   const [items, setItems] = useState(dummyOwnedItems.items);
   const shoppingList = items.filter((item) => item.amount === 0);
 
