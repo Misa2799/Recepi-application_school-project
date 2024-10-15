@@ -1,18 +1,10 @@
 "use client";
 
-import ItemsList, { OwnedItems } from "@/components/itemsList";
+import ItemsList from "@/components/itemsList";
 import FridgeSideBar from "@/components/fridgeSideBar";
 import WishList from "@/components/wishList";
 import { useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { deleteRecipes } from "../actions";
-import { Recipe } from "@/types/types";
-import {
-  dummyOwnedItems,
-  dummyRecipes,
-  ShoppingListProvider,
-} from "@/context/shoppingListContext.context";
+import { ShoppingListProvider } from "@/context/shoppingListContext.context";
 
 export default function Page() {
   const { userId } = useAuth();

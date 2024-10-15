@@ -7,16 +7,7 @@ import {
 } from "./ui/accordion";
 import { Checkbox } from "./ui/checkbox";
 import { Button } from "./ui/button";
-import { Recipe } from "@/types/types";
 import { useShoppingList } from "@/context/shoppingListContext.context";
-
-type WishListProps = {
-  recipes: Recipe[];
-  items: { name: string; amount: number }[];
-  viewRecipe: (id: number) => void;
-  addMissingItems: (id: number) => void;
-  removeRecipe: (id: number) => void;
-};
 
 export default function WishList() {
   const { recipes, items, viewRecipe, addMissingItems, removeRecipe } =

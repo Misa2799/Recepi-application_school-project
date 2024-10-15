@@ -3,12 +3,6 @@ import React from "react";
 import { Button } from "./ui/button";
 import { useShoppingList } from "@/context/shoppingListContext.context";
 
-export type OwnedItems = {
-  id: number;
-  user_id: string;
-  items: { name: string; amount: number }[];
-};
-
 export default function ItemsList() {
   const { shoppingList, removeItem } = useShoppingList();
 

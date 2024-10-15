@@ -8,6 +8,8 @@ import React, {
 import { Recipe } from "@/types/types";
 import { useRouter } from "next/navigation";
 import { IngredientInterface } from "@/models/inventory";
+import { useAuth } from "@clerk/nextjs";
+import { getWishlist, fetchFridgeItems } from "@/app/recipes/actions";
 
 type ShoppingListContextType = {
   recipes: Recipe[];
@@ -36,14 +38,45 @@ export const useShoppingList = () => {
 export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  // Replace data
-  const [recipes, setRecipes] = useState<Recipe[]>(dummyRecipes);
+  const { userId } = useAuth();
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [items, setItems] = useState<IngredientInterface[]>([]);
+  const [shoppingList, setShoppingList] = useState<IngredientInterface[]>([]);
 
-  // Replace data
-  const [items, setItems] = useState<IngredientInterface[]>(
-    dummyOwnedItems.items
-  );
-  const shoppingList = items.filter((item) => item.amount === 0);
+  // get all recipes in WishList table
+  useEffect(() => {
+    fetchWishlist();
+  }, [userId]);
+
+  const fetchWishlist = async () => {
+    if (!userId) {
+      return;
+    }
+    const fetchedWishlist = await getWishlist(userId);
+    if (fetchedWishlist) {
+      setRecipes(fetchedWishlist);
+    }
+  };
+
+  // get all items that a user needs to buy
+  useEffect(() => {
+    fetchFridge();
+  }, [userId]);
+
+  const fetchFridge = async () => {
+    if (!userId) {
+      return;
+    }
+    const fetchedFridge = await fetchFridgeItems(userId);
+    if (fetchedFridge) {
+      setItems(fetchedFridge);
+
+      const shoppingListItems = fetchedFridge.filter(
+        (item: any) => item.amount === 0
+      );
+      setShoppingList(shoppingListItems);
+    }
+  };
 
   const router = useRouter();
 
@@ -95,75 +128,75 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
   );
 };
 
-export const dummyRecipes: Recipe[] = [
-  {
-    id: 1,
-    name: "Classic Margherita Pizza",
-    ingredients: [
-      "Pizza dough",
-      "Tomato sauce",
-      "Fresh mozzarella cheese",
-      "Fresh basil leaves",
-      "Olive oil",
-      "Salt and pepper to taste",
-    ],
-    instructions: [
-      "Preheat the oven to 475°F (245°C).",
-      "Roll out the pizza dough and spread tomato sauce evenly.",
-      "Top with slices of fresh mozzarella and fresh basil leaves.",
-      "Drizzle with olive oil and season with salt and pepper.",
-      "Bake in the preheated oven for 12-15 minutes or until the crust is golden brown.",
-      "Slice and serve hot.",
-    ],
-    prepTimeMinutes: 20,
-    cookTimeMinutes: 15,
-    servings: 4,
-    difficulty: "Easy",
-    cuisine: "Italian",
-    caloriesPerServing: 300,
-    tags: ["Pizza", "Italian"],
-    userId: 45,
-    image: "https://cdn.dummyjson.com/recipe-images/1.webp",
-    rating: 4.6,
-    reviewCount: 3,
-    mealType: ["Dinner"],
-  },
-  {
-    id: 2,
-    name: "Avocado salada",
-    ingredients: [
-      "Avocado",
-      "Tomato",
-      "Onion",
-      "Lemon juice",
-      "Olive oil",
-      "Salt",
-    ],
-    instructions: ["Chop avocado, tomato and onion.", "Mix all ingredients"],
-    prepTimeMinutes: 20,
-    cookTimeMinutes: 15,
-    servings: 4,
-    difficulty: "Easy",
-    cuisine: "Italian",
-    caloriesPerServing: 300,
-    tags: ["Pizza", "Italian"],
-    userId: 45,
-    image: "https://cdn.dummyjson.com/recipe-images/1.webp",
-    rating: 4.6,
-    reviewCount: 3,
-    mealType: ["Dinner"],
-  },
-];
+// export const dummyRecipes: Recipe[] = [
+//   {
+//     id: 1,
+//     name: "Classic Margherita Pizza",
+//     ingredients: [
+//       "Pizza dough",
+//       "Tomato sauce",
+//       "Fresh mozzarella cheese",
+//       "Fresh basil leaves",
+//       "Olive oil",
+//       "Salt and pepper to taste",
+//     ],
+//     instructions: [
+//       "Preheat the oven to 475°F (245°C).",
+//       "Roll out the pizza dough and spread tomato sauce evenly.",
+//       "Top with slices of fresh mozzarella and fresh basil leaves.",
+//       "Drizzle with olive oil and season with salt and pepper.",
+//       "Bake in the preheated oven for 12-15 minutes or until the crust is golden brown.",
+//       "Slice and serve hot.",
+//     ],
+//     prepTimeMinutes: 20,
+//     cookTimeMinutes: 15,
+//     servings: 4,
+//     difficulty: "Easy",
+//     cuisine: "Italian",
+//     caloriesPerServing: 300,
+//     tags: ["Pizza", "Italian"],
+//     userId: 45,
+//     image: "https://cdn.dummyjson.com/recipe-images/1.webp",
+//     rating: 4.6,
+//     reviewCount: 3,
+//     mealType: ["Dinner"],
+//   },
+//   {
+//     id: 2,
+//     name: "Avocado salada",
+//     ingredients: [
+//       "Avocado",
+//       "Tomato",
+//       "Onion",
+//       "Lemon juice",
+//       "Olive oil",
+//       "Salt",
+//     ],
+//     instructions: ["Chop avocado, tomato and onion.", "Mix all ingredients"],
+//     prepTimeMinutes: 20,
+//     cookTimeMinutes: 15,
+//     servings: 4,
+//     difficulty: "Easy",
+//     cuisine: "Italian",
+//     caloriesPerServing: 300,
+//     tags: ["Pizza", "Italian"],
+//     userId: 45,
+//     image: "https://cdn.dummyjson.com/recipe-images/1.webp",
+//     rating: 4.6,
+//     reviewCount: 3,
+//     mealType: ["Dinner"],
+//   },
+// ];
 
-export const dummyOwnedItems = {
-  id: 0,
-  user_id: "user_2n93xAxryHQ4ioN7J4LCoX9STn0",
-  items: [
-    { name: "Pizza dough", amount: 0 },
-    { name: "Tomato sauce", amount: 0 },
-    { name: "Fresh mozzarella cheese", amount: 1 },
-    { name: "Fresh basil leaves", amount: 1 },
-    { name: "Olive oil", amount: 1 },
-    { name: "Salt and pepper to taste", amount: 1 },
-  ],
-};
+// export const dummyOwnedItems = {
+//   id: 0,
+//   user_id: "user_2n93xAxryHQ4ioN7J4LCoX9STn0",
+//   items: [
+//     { name: "Pizza dough", amount: 0 },
+//     { name: "Tomato sauce", amount: 0 },
+//     { name: "Fresh mozzarella cheese", amount: 1 },
+//     { name: "Fresh basil leaves", amount: 1 },
+//     { name: "Olive oil", amount: 1 },
+//     { name: "Salt and pepper to taste", amount: 1 },
+//   ],
+// };
