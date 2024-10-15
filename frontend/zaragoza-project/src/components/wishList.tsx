@@ -8,6 +8,7 @@ import {
 import { Checkbox } from "./ui/checkbox";
 import { Button } from "./ui/button";
 import { Recipe } from "@/types/types";
+import { useShoppingList } from "@/context/shoppingListContext.context";
 
 type WishListProps = {
   recipes: Recipe[];
@@ -17,13 +18,10 @@ type WishListProps = {
   removeRecipe: (id: number) => void;
 };
 
-export default function WishList({
-  recipes,
-  items,
-  viewRecipe,
-  addMissingItems,
-  removeRecipe,
-}: WishListProps) {
+export default function WishList() {
+  const { recipes, items, viewRecipe, addMissingItems, removeRecipe } =
+    useShoppingList();
+
   return (
     <div id="listItem" className="px-4">
       {recipes.map((recipe) => (

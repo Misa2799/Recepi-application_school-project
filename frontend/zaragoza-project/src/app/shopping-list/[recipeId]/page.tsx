@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { dummyRecipes } from "../page";
+import { dummyRecipes } from "../../../context/shoppingListContext.context";
 import { getRecipe } from "@/app/actions";
 import FridgeSideBar from "@/components/fridgeSideBar";
 import RecipesSideBar from "@/components/recipesSideBar";
