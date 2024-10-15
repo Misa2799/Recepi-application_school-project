@@ -1,19 +1,11 @@
 import { Minus, Refrigerator } from "lucide-react";
 import React from "react";
 import { Button } from "./ui/button";
+import { useShoppingList } from "@/context/shoppingListContext.context";
 
-export type OwnedItems = {
-  id: number;
-  user_id: string;
-  items: { name: string; amount: number }[];
-};
+export default function ItemsList() {
+  const { shoppingList, removeItem } = useShoppingList();
 
-type ItemsListProps = {
-  items: { name: string; amount: number }[];
-  removeItem: (name: string) => void;
-};
-
-export default function ItemsList({ items, removeItem }: ItemsListProps) {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold flex items-center text-yellow-400">
@@ -22,7 +14,7 @@ export default function ItemsList({ items, removeItem }: ItemsListProps) {
       </h2>
 
       <ul className="mt-6 space-y-2">
-        {items.map((item, index) => (
+        {shoppingList.map((item, index) => (
           <li
             key={index}
             className="flex items-center justify-between bg-secondary p-2 rounded"
