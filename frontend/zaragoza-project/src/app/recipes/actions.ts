@@ -21,8 +21,9 @@ export async function getWishlist(id: string) {
 export async function addWishlist(userId: string, recipeId: string[]) {
     await dbConnect();
     const wishList: any = await getWishlist(userId);
+    console.log(wishList);
     if (wishList) {
-        if (wishList.recipeId.includes(recipeId[0])) {
+        if (wishList.map((recipe: Recipe) => recipe.id).includes(recipeId)) {
             return false;
         }
         const newWishlist = await Wishlist.findOneAndUpdate(
