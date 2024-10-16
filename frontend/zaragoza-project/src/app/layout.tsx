@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import { ClerkProvider } from "@clerk/nextjs";
 import { FridgeProvider } from "@/context/fridgeContext.context";
+import { ShoppingListProvider } from "@/context/shoppingListContext.context";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -29,6 +30,8 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <FridgeProvider>
+      <ShoppingListProvider>
+
         <html lang="en">
           <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -37,6 +40,7 @@ export default function RootLayout({
             {children}
           </body>
         </html>
+        </ShoppingListProvider>
       </FridgeProvider>
     </ClerkProvider>
   );

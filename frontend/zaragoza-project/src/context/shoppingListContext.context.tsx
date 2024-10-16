@@ -1,3 +1,4 @@
+'use client'
 import React, {
   createContext,
   useContext,
@@ -9,7 +10,7 @@ import { Recipe } from "@/types/types";
 import { useRouter } from "next/navigation";
 import { IngredientInterface } from "@/models/inventory";
 import { useAuth } from "@clerk/nextjs";
-import { getWishlist, fetchFridgeItems } from "@/app/recipes/actions";
+import { getWishlist, fetchFridgeItems, removeWishlist } from "@/app/recipes/actions";
 
 type ShoppingListContextType = {
   recipes: Recipe[];
@@ -102,6 +103,9 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const removeRecipe = (id: number) => {
+    if (!userId) return;
+    const removed = removeWishlist(userId, id.toString());
+    if(!removed) return;
     setRecipes((prevRecipes) =>
       prevRecipes.filter((recipe) => recipe.id !== id)
     );

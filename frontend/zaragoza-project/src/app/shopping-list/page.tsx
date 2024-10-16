@@ -4,14 +4,12 @@ import ItemsList from "@/components/itemsList";
 import FridgeSideBar from "@/components/fridgeSideBar";
 import WishList from "@/components/wishList";
 import { useAuth } from "@clerk/nextjs";
-import { ShoppingListProvider } from "@/context/shoppingListContext.context";
 
 export default function Page() {
   const { userId } = useAuth();
   console.log("userId: ", userId);
 
   return (
-    <ShoppingListProvider>
       <div className="grid grid-cols-12 gap-4">
         <div id="sideBar" className="col-span-3">
           <FridgeSideBar />
@@ -25,6 +23,5 @@ export default function Page() {
           <ItemsList />
         </div>
       </div>
-    </ShoppingListProvider>
   );
 }

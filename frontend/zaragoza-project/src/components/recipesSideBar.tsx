@@ -1,58 +1,97 @@
 "use client";
 
-import { Refrigerator } from "lucide-react";
-import { useState } from "react";
+import { Recipe } from "@/types/types";
+import { ChevronRight, Refrigerator, Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useShoppingList } from "@/context/shoppingListContext.context";
+import CustomAlertDialog from "./AlertDialog";
+import { ScrollArea } from "./ui/scroll-area";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 export default function RecipesSideBar() {
-  const [foodItems, setFoodItems] = useState([
-    { name: "Tomato Basil Bruschetta", image: "" },
-    { name: "Chicken Alfredo Pasta", image: "" },
-    { name: "Vegerarian Stir-Fry", image: "" },
-    { name: "Quinoa Salada with Avocado", image: "" },
-  ]);
+  const [foodItems, setFoodItems] = useState<Recipe[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [newFoodItem, setNewFoodItem] = useState("");
+  const [loading, setLoading] = useState(true); // Add loading state
+  const { recipes, removeRecipe } = useShoppingList();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
 
-  const handleAdd = () => {
-    if (
-      newFoodItem &&
-      !foodItems.some(
-        (item) => item.name.toLowerCase() === newFoodItem.toLowerCase()
-      )
-    ) {
-      setFoodItems([...foodItems, { name: newFoodItem, image: "" }]);
-      setNewFoodItem("");
-    }
-  };
+  useEffect(() => {
+    const fetchWishlistRecipes = async () => {
+      if (recipes.length === 0) {
+        return;
+      }
+      setFoodItems(recipes);
+      setLoading(false); // Set loading to false after data is fetched
+    };
+
+    fetchWishlistRecipes();
+  }, [recipes]);
 
   const filteredItems = foodItems.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleRemoveClick = (id: number) => {
+    setSelectedRecipeId(id);
+    setIsDialogOpen(true);
+  };
+
+  const handleConfirmRemove = () => {
+    if (selectedRecipeId !== null) {
+      removeRecipe(selectedRecipeId);
+      setIsDialogOpen(false);
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>; // Show loading indicator
+  }
+
   return (
-    <div className="flex h-screen">
-      <div className="w-72 bg-white p-6">
-        <h2 className="text-2xl font-bold mb-6 flex items-center text-yellow-400">
-          <Refrigerator className="mr-2" />
-          My Recipes
-        </h2>
-        <div className="flex mb-6 bg-gray-200  text-gray-900 text-sm rounded-lg w-full"></div>
-        <ul className="space-y-4">
-          {filteredItems.map((item) => (
-            <li
-              key={item.name}
-              className="flex h-16 justify-between items-center bg-white p-4 border-2 border-gray-900 rounded-lg shadow-sm"
-            >
-              <a
-                href={``}
-                className="font-medium text-gray-900 w-full text-left hover:underline hover:font-bold"
-              >
-                {item.name}
-              </a>
-            </li>
-          ))}
-        </ul>
+    <div className="fixed right-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="p-4 bg-yellow-400">
+        <h2 className="text-2xl font-bold text-white">My Recipes</h2>
       </div>
+      <div className="p-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <Input
+            type="text"
+            placeholder="Search recipes..."
+            className="pl-10 w-full"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+      <ScrollArea className="h-[calc(100vh-200px)]">
+        <div className="p-4">
+          {filteredItems.map((recipe) => (
+            <div key={recipe.id} className="flex items-center justify-between py-2 hover:bg-gray-100 rounded-md px-2">
+              <div>
+                <p className="font-medium">{recipe.name}</p>
+                <p className="text-sm text-gray-500">{recipe.cuisine}</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <CustomAlertDialog
+                    isOpen={isDialogOpen}
+                    onOpenChange={setIsDialogOpen}
+                    onConfirm={handleConfirmRemove}
+                    title="Remove Recipe"
+                    description="Are you sure you want to remove this recipe?"
+                  />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 }
