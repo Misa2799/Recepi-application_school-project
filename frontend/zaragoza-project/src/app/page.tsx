@@ -25,6 +25,7 @@ type Recipe = {
 
 export default function HomePage() {
   const [recipesData, setRecipesData] = useState<Recipe[]>([]);
+  const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
   const [currentCategory, setCurrentCategory] = useState("All");
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -32,31 +33,39 @@ export default function HomePage() {
     const fetchedTasks = await getRecipesList();
     const recipes = fetchedTasks.recipes;
 
-    const filteredRecipes =
-      currentCategory === "All"
-        ? recipes
-        : recipes.filter((recipe: { mealType: string | string[] }) =>
-            recipe.mealType.includes(currentCategory)
-          );
+    setRecipesData(recipes);
+
     const uniqueRecipes: Recipe[] = [];
     const seenMealTypes = new Set();
 
-    filteredRecipes.forEach(
+    recipes.forEach(
       (recipe: { id: any; name: any; image: any; mealType: any }) => {
         const { id, name, image, mealType } = recipe;
 
-        if (seenMealTypes.has(mealType)) {
-          return;
-        }
-        if (id !== undefined && name && image) {
+        if (!seenMealTypes.has(mealType) && id !== undefined && name && image) {
           uniqueRecipes.push({ id, name, image, mealType });
           seenMealTypes.add(mealType);
         }
       }
     );
 
-    setRecipesData(uniqueRecipes);
+    if (currentCategory === "All") {
+      setFilteredRecipes(shuffleArray(uniqueRecipes));
+    } else {
+      setFilteredRecipes(
+        shuffleArray(
+          uniqueRecipes.filter((recipe) =>
+            recipe.mealType.includes(currentCategory)
+          )
+        )
+      );
+    }
+
     setCurrentIndex(0);
+  };
+
+  const shuffleArray = (array: Recipe[]) => {
+    return array.sort(() => Math.random() - 0.5);
   };
 
   useEffect(() => {
@@ -69,38 +78,33 @@ export default function HomePage() {
 
   const prevSlide = () => {
     setCurrentIndex(
-      (prevIndex) => prevIndex - 1 + recipesData.length + recipesData.length
+      (prevIndex) => (prevIndex - 1 + recipesData.length) % recipesData.length
     );
   };
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <main className="container mx-auto mt-8 px-4">
-        <h1 className="text-3xl font-bold mb-6">Explore New Recipes</h1>
 
+  return (
+    <div className="min-h-screen">
+      <main className="container mx-auto mt-8 px-4">
         <div className="relative mb-8">
-          <div className="overflow-hidden rounded-lg shadow-lg">
-            <div
-              className={`flex ${
-                recipesData.length < 4 ? "justify-center" : ""
-              }`}
-            >
-              {Array.from({ length: Math.min(4, recipesData.length) }).map(
-                (_, offset) => {
-                  const index = (currentIndex + offset) % recipesData.length;
-                  return (
-                    <div key={recipesData[index].id} className="w-1/4 p-2">
-                      <img
-                        src={recipesData[index].image}
-                        alt={recipesData[index].name}
-                        className="w-full h-48 object-cover rounded-lg"
-                      />
-                      <h2 className="mt-2 text-center text-sm font-semibold">
-                        {recipesData[index].name}
-                      </h2>
-                    </div>
-                  );
-                }
-              )}
+          <div className="">
+            <div className={`flex ${recipesData.length} flex-col`}>
+              {recipesData
+                .slice(currentIndex, currentIndex + 1)
+                .map((recipe) => (
+                  <div
+                    key={recipe.id}
+                    className="w-full p-0 flex flex-col relative text-right"
+                  >
+                    <img
+                      src={recipe.image}
+                      alt={recipe.name}
+                      className="w-4/6 h-96 object-cover rounded-lg mx-auto"
+                    />
+                    <h2 className="mt-10 text-2xl font-semibold absolute left-0 w-48 font-mono">
+                      {recipe.name}
+                    </h2>
+                  </div>
+                ))}
             </div>
           </div>
           <button
@@ -136,7 +140,7 @@ export default function HomePage() {
 
         <h2 className="text-2xl font-bold mb-4">Explore More Recipes</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {recipesData.map((recipe) => (
+          {filteredRecipes.map((recipe) => (
             <div
               key={recipe.id}
               className="bg-white rounded-lg shadow-md overflow-hidden"
