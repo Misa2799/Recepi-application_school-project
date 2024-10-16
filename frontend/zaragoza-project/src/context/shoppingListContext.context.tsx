@@ -83,7 +83,7 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
   const router = useRouter();
 
   const viewRecipe = (id: number) => {
-    router.push(`/shopping-list/${id}`);
+    router.push(`/shopping-list/details?recipeId=${id}`);
   };
 
   const addMissingItems = (id: number) => {

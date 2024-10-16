@@ -1,56 +1,61 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { dummyRecipes } from "../../../context/shoppingListContext.context";
-import { getRecipe } from "@/app/actions";
+import { getRecipe, getRecipeById } from "@/app/actions";
 import FridgeSideBar from "@/components/fridgeSideBar";
 import RecipesSideBar from "@/components/recipesSideBar";
 import { Recipe } from "@/types/types";
+import Link from "next/link";
 
-export default function RecipeDetail() {
-  const params = useParams();
-  const recipeId = params.recipeId.toString();
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>();
+
+export default function FridgeRecipeDetail() {
+  const searchParams = useSearchParams();
+  const recipeId = searchParams.get("recipeId");
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // get a selected recipe based on recipeId from DB?
-    // const foundRecipe = getRecipe(recipeId);
+    if (!recipeId) return;
 
-    // replace later
-    const foundRecipe = dummyRecipes.find(
-      (recipe) => recipe.id === Number(recipeId)
-    );
+    const fetchRecipeDetails = async () => {
+      try {
+        const data = await getRecipeById(recipeId);
+        setRecipe(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching recipe details:", error);
+        setLoading(false);
+      }
+    };
 
-    if (foundRecipe) {
-      setSelectedRecipe(foundRecipe);
-    }
+    fetchRecipeDetails();
   }, [recipeId]);
 
-  if (!selectedRecipe) {
-    return <div>No longer available...</div>;
+  if( recipe === null) {
+    return <div>Recipe not found</div>;
+  }
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return (
     <>
-      <div className="grid grid-cols-12 gap-4">
-        <div id="sideBar" className="col-span-3">
-          <FridgeSideBar />
-        </div>
-
-        <div id="recipe" className="col-span-6 py-6 text-gray-900">
-          <div className="">
-            <h2 className="text-3xl font-bold">{selectedRecipe.name}</h2>
+        <div id="recipe" className="col-span-6  text-gray-900">
+          <Link href="/shopping-list" className="text-2xl" >Back to recipes</Link>
+          <div className="mt-3">
+            <h2 className="text-3xl font-bold">{recipe.name}</h2>
             <img
-              src={selectedRecipe.image}
-              alt={selectedRecipe.name}
+              src={recipe.image}
+              alt={recipe.name}
               className="w-full h-48 object-cover rounded-md my-4"
             />
             <p className="mt-4 text-xl font-semibold pt-4 border border-transparent border-t-gray-900">
               Ingredients
             </p>
             <ul className="pl-10 mt-4">
-              {selectedRecipe.ingredients.map((ingredient, index) => (
+              {recipe.ingredients.map((ingredient, index) => (
                 <li className="space-x-2 my-2 list-disc" key={index}>
                   {ingredient}
                 </li>
@@ -60,7 +65,7 @@ export default function RecipeDetail() {
               Instructions
             </p>
             <ol className="pl-5 mt-4">
-              {selectedRecipe.instructions.map((instruction, index) => (
+              {recipe.instructions.map((instruction, index) => (
                 <li className="space-x-2 my-2 " key={index}>
                   <p>
                     <span className="font-bold">Step{index + 1}:</span>{" "}
@@ -71,11 +76,6 @@ export default function RecipeDetail() {
             </ol>
           </div>
         </div>
-
-        <div id="itemsList" className="h-screen col-span-3">
-          <RecipesSideBar />
-        </div>
-      </div>
     </>
   );
 }

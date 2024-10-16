@@ -5,7 +5,7 @@ import { useShoppingList } from "@/context/shoppingListContext.context";
 
 export default function ItemsList() {
   const { shoppingList, removeItem } = useShoppingList();
-
+  
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold flex items-center text-yellow-400">
