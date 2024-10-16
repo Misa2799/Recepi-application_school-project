@@ -14,7 +14,7 @@ const Recipes = () => {
   const [filteredCuisine, setFilteredCuisine] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string | null>(null);
   const user = useAuth();
-  const { recipes , removeRecipe } = useShoppingList();
+  const { recipes , removeRecipe, addRecipeToWishlist } = useShoppingList(); // Add addRecipeToWishlist
 
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const Recipes = () => {
     if (user.userId) {
       const success = await addWishlist(user.userId, [recipe.id.toString()]);
       if (success) {
-
+        addRecipeToWishlist(recipe); // Add this line
       } else {
         console.error("Failed to add to wishlist");
       }

@@ -1,7 +1,7 @@
 "use client";
 
 import { Recipe } from "@/types/types";
-import { ChevronRight, Refrigerator, Search } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useShoppingList } from "@/context/shoppingListContext.context";
 import CustomAlertDialog from "./AlertDialog";
@@ -12,7 +12,7 @@ import { Input } from "./ui/input";
 export default function RecipesSideBar() {
   const [foodItems, setFoodItems] = useState<Recipe[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
   const { recipes, removeRecipe } = useShoppingList();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
@@ -23,7 +23,7 @@ export default function RecipesSideBar() {
         return;
       }
       setFoodItems(recipes);
-      setLoading(false); // Set loading to false after data is fetched
+      setLoading(false);
     };
 
     fetchWishlistRecipes();
@@ -46,7 +46,7 @@ export default function RecipesSideBar() {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Show loading indicator
+    return <div>Loading...</div>;
   }
 
   return (
@@ -78,20 +78,23 @@ export default function RecipesSideBar() {
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <CustomAlertDialog
-                    isOpen={isDialogOpen}
-                    onOpenChange={setIsDialogOpen}
-                    onConfirm={handleConfirmRemove}
-                    title="Remove Recipe"
-                    description="Are you sure you want to remove this recipe?"
-                  />
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleRemoveClick(recipe.id)}>
+                  <span className="text-red-500">X</span>
                 </Button>
               </div>
             </div>
           ))}
         </div>
       </ScrollArea>
+      <div className="hidden">
+      <CustomAlertDialog
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onConfirm={handleConfirmRemove}
+        title="Remove Recipe"
+        description="Are you sure you want to remove this recipe?"
+      />
+      </div>
     </div>
   );
 }
