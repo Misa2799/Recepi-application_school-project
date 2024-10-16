@@ -8,14 +8,14 @@ import { Recipe } from "@/types/types";
 import { addWishlist, getWishlist } from "./actions";
 import RecipesSideBar from "@/components/recipesSideBar";
 import { useShoppingList } from "@/context/shoppingListContext.context";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Recipes = () => {
   const [recipesList, setRecipes] = useState<Recipe[]>([]);
   const [filteredCuisine, setFilteredCuisine] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string | null>(null);
   const user = useAuth();
-  const { recipes , removeRecipe, addRecipeToWishlist } = useShoppingList(); // Add addRecipeToWishlist
-
+  const { recipes, removeRecipe, addRecipeToWishlist } = useShoppingList(); // Add addRecipeToWishlist
 
   useEffect(() => {
     fetchRecipes();
@@ -174,31 +174,33 @@ const Recipes = () => {
             </ul>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-          {displayedRecipes.map((recipe) => (
-            <div key={recipe.id} className="border border-gray-300 p-4 rounded shadow">
-              <img
-                src={recipe.image}
-                alt={recipe.name}
-                className="w-full h-32 object-cover rounded mb-2"
-              />
-              <h3 className="font-semibold text-lg">{recipe.name}</h3>
-              <p className="text-sm text-gray-600">Cuisine: {recipe.cuisine}</p>
-              <p className="text-sm text-gray-600">Prep Time: {recipe.prepTimeMinutes} mins</p>
-              <p className="text-sm text-gray-600">Cook Time: {recipe.cookTimeMinutes} mins</p>
-              <p className="text-sm text-gray-600">Servings: {recipe.servings}</p>
-              <div className="flex justify-between mt-4">
-                <button className="bg-blue-500 text-white px-3 py-1 rounded">More</button>
-                <button
-                  className="bg-green-500 text-white px-3 py-1 rounded"
-                  onClick={() => addRecipe(recipe)}
-                >
-                  Add
-                </button>
+        <ScrollArea className="h-[calc(100vh-4rem)]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            {displayedRecipes.map((recipe) => (
+              <div key={recipe.id} className="border border-gray-300 p-4 rounded shadow">
+                <img
+                  src={recipe.image}
+                  alt={recipe.name}
+                  className="w-full h-32 object-cover rounded mb-2"
+                />
+                <h3 className="font-semibold text-lg">{recipe.name}</h3>
+                <p className="text-sm text-gray-600">Cuisine: {recipe.cuisine}</p>
+                <p className="text-sm text-gray-600">Prep Time: {recipe.prepTimeMinutes} mins</p>
+                <p className="text-sm text-gray-600">Cook Time: {recipe.cookTimeMinutes} mins</p>
+                <p className="text-sm text-gray-600">Servings: {recipe.servings}</p>
+                <div className="flex justify-between mt-4">
+                  <button className="bg-blue-500 text-white px-3 py-1 rounded">More</button>
+                  <button
+                    className="bg-green-500 text-white px-3 py-1 rounded"
+                    onClick={() => addRecipe(recipe)}
+                  >
+                    Add
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollArea>
       </div>
       {/* Fixed "My Recipes" section to the right */}
       <div className="fixed right-0 top-16 h-[calc(100vh-4rem)]">

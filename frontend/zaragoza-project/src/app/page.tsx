@@ -25,12 +25,14 @@ type Recipe = {
 
 export default function HomePage() {
   const [recipesData, setRecipesData] = useState<Recipe[]>([]);
+  const [filteredRecipesData, setFilteredRecipesData] = useState<Recipe[]>([]);
   const [currentCategory, setCurrentCategory] = useState("All");
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const fetchRecipes = async () => {
     const fetchedTasks = await getRecipesList();
     const recipes = fetchedTasks.recipes;
+    setRecipesData(recipes);
 
     const filteredRecipes =
       currentCategory === "All"
@@ -54,8 +56,7 @@ export default function HomePage() {
         }
       }
     );
-
-    setRecipesData(uniqueRecipes);
+    setFilteredRecipesData(uniqueRecipes);
     setCurrentIndex(0);
   };
 
@@ -74,8 +75,8 @@ export default function HomePage() {
   };
   return (
     <div className="min-h-screen bg-gray-100">
-      <main className="container mx-auto mt-8 px-4">
-        <h1 className="text-3xl font-bold mb-6">Explore New Recipes</h1>
+      <main className="container mx-auto px-4">
+        <h1 className="text-4xl font-bold mb-6">Explore New Recipes</h1>
 
         <div className="relative mb-8">
           <div className="overflow-hidden rounded-lg shadow-lg">
@@ -136,7 +137,7 @@ export default function HomePage() {
 
         <h2 className="text-2xl font-bold mb-4">Explore More Recipes</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {recipesData.map((recipe) => (
+          {filteredRecipesData.map((recipe) => (
             <div
               key={recipe.id}
               className="bg-white rounded-lg shadow-md overflow-hidden"
