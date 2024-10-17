@@ -121,7 +121,7 @@ export default function HomePage() {
           </button>
         </div>
 
-        <h2 className="text-2xl font-bold mb-4">Recipe Categories</h2>
+        <h2 className="text-2xl font-bold mb-4">Meal Types</h2>
         <div className="flex space-x-4 mb-8 overflow-x-auto pb-2">
           {recipeCategories.map((mealType) => (
             <button
@@ -139,23 +139,25 @@ export default function HomePage() {
         </div>
 
         <h2 className="text-2xl font-bold mb-4">Explore More Recipes</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredRecipes.map((recipe) => (
-            <div
-              key={recipe.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden"
-            >
-              <img
-                src={recipe.image}
-                alt={recipe.name || "Recipe Image"}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-lg font-semibold">{recipe.name}</h3>
+        <a href="/shopping-list">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredRecipes.map((recipe) => (
+              <div
+                key={recipe.id}
+                className="bg-white rounded-lg shadow-md overflow-hidden"
+              >
+                <img
+                  src={recipe.image}
+                  alt={recipe.name || "Recipe Image"}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold">{recipe.name}</h3>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </a>
       </main>
     </div>
   );
