@@ -8,18 +8,16 @@ export default function ShoppingListLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="grid grid-cols-12 gap-4">
-    <div id="sideBar" className="col-span-3">
-      <FridgeSideBar />
-    </div>
-
-    <div id="wishList" className="col-span-6 py-6">
+    <div className="grid grid-cols-12 gap-4 h-screen">
+      <div className="col-span-3">
+        <FridgeSideBar />
+      </div>
+      <div className="col-span-6 py-6 overflow-auto">
         {children}
+      </div>
+      <div className="col-span-3">
+        <ItemsList />
+      </div>
     </div>
-
-    <div id="itemsList" className="h-screen col-span-3">
-      <ItemsList />
-    </div>
-  </div>
   );
 }

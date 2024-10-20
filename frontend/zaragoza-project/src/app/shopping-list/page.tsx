@@ -3,7 +3,5 @@
 import WishList from "@/components/wishList";
 
 export default function Page() {
-  return (
-    <WishList />
-  );
+  return  <WishList />;
 }
