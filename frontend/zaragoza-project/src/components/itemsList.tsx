@@ -2,6 +2,7 @@ import { Minus, ShoppingBasket } from "lucide-react";
 import React from "react";
 import { Button } from "./ui/button";
 import { useShoppingList } from "@/context/shoppingListContext.context";
+import { ScrollArea } from "./ui/scroll-area";
 
 export default function ItemsList() {
   const { shoppingList, removeItem } = useShoppingList();
@@ -15,7 +16,7 @@ export default function ItemsList() {
           </h2>
         </div>
 
-      <ul className="mt-6 space-y-2">
+        <ScrollArea className="h-[calc(100vh-150px)]">
         {shoppingList.map((item, index) => (
           <li
             key={index}
@@ -33,7 +34,7 @@ export default function ItemsList() {
             </div>
           </li>
         ))}
-      </ul>
+      </ScrollArea>
     </div>
   );
 }
