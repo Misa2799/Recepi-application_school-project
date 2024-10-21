@@ -1,7 +1,7 @@
 'use client'
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useAuth } from '@clerk/nextjs';
-import { fetchFridgeItems } from '@/app/recipes/actions';
+import { addInventoryItem, fetchFridgeItems, updateInventoryItem, removeInventoryItem } from '@/app/recipes/actions';
 import { IngredientInterface } from '@/models/inventory';
 
 const initialState = {
@@ -40,15 +40,29 @@ export const FridgeProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const addFridgeItem = (item: IngredientInterface) => {
+  const addFridgeItem = async (item: IngredientInterface) => {
+    if (!userId) {
+      return;
+    }
+    const existingItem = fridgeItems.find((fridgeItem) => fridgeItem.name === item.name);
+    if (existingItem) {
+      await addInventoryItem(userId, [item]);
+      updateFridgeItem(item.name, item.amount + existingItem.amount);
+      return;
+    }
+    await addInventoryItem(userId, [item]);
     setFridgeItems((prevItems) => [...prevItems, item]);
   };
 
-  const updateFridgeItem = (name: string, amount: number) => {
+  const updateFridgeItem = async (name: string, amount: number) => {
+    if (!userId) {
+      return;
+    }
     if (amount <= 0) {
       removeFridgeItem(name);
       return;
     }
+    await updateInventoryItem(userId, name, amount);
     setFridgeItems((prevItems) =>
       prevItems.map((item) =>
         item.name === name ? { ...item, amount } : item
@@ -56,11 +70,14 @@ export const FridgeProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  const removeFridgeItem = (name: string) => {
+  const removeFridgeItem = async (name: string) => {
+    if (!userId) {
+      return;
+    }
+    await removeInventoryItem(userId, name);
     setFridgeItems((prevItems) =>
       prevItems.filter((item) => item.name !== name)
     );
-    // Update DB
   };
 
   return (

@@ -14,7 +14,7 @@ export default function ShoppingListLayout({
       <div className="col-span-2">
         <FridgeSideBar />
       </div>
-      <div className="col-span-8 py-6 overflow-auto">
+      <div className="col-span-8 py-8 overflow-auto">
         {children}
       </div>
       <div className="col-span-2">

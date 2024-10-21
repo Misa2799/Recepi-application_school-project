@@ -20,7 +20,7 @@ export default function FridgeSideBar() {
   const [quantity, setQuantity] = useState(1);
   const [filteredItems, setFilteredItems] = useState<IngredientInterface[]>([]);
   const [expiry, setExpiry] = useState<Date | undefined>(undefined);
-    const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (fridgeItems) {
@@ -32,7 +32,6 @@ export default function FridgeSideBar() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ name, quantity, expiry });
     if (name) {
       addFridgeItem({ name, amount: quantity });
       setName("");

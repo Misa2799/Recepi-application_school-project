@@ -44,10 +44,12 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [items, setItems] = useState<IngredientInterface[]>([]);
   const [shoppingList, setShoppingList] = useState<IngredientInterface[]>([]);
+  const router = useRouter();
 
   // get all recipes in WishList table
   useEffect(() => {
     fetchWishlist();
+    fetchFridgeList();
   }, [userId]);
 
   const fetchWishlist = async () => {
@@ -60,27 +62,19 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  // get all items that a user needs to buy
-  useEffect(() => {
-    fetchFridge();
-  }, [userId]);
-
-  const fetchFridge = async () => {
+  const fetchFridgeList = async () => {
     if (!userId) {
       return;
     }
     const fetchedFridge = await fetchFridgeItems(userId);
     if (fetchedFridge) {
       setItems(fetchedFridge);
-
       const shoppingListItems = fetchedFridge.filter(
         (item: any) => item.amount === 0
       );
       setShoppingList(shoppingListItems);
     }
   };
-
-  const router = useRouter();
 
   const viewRecipe = (id: number) => {
     router.push(`/shopping-list/details?recipeId=${id}`);
@@ -116,7 +110,7 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
     setItems((prevItems) => prevItems.filter((item) => item.name !== name));
   };
 
-  const addRecipeToWishlist = (recipe: Recipe) => { // Add this function
+  const addRecipeToWishlist = (recipe: Recipe) => { 
     setRecipes((prevRecipes) => [...prevRecipes, recipe]);
   };
 

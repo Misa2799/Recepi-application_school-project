@@ -15,7 +15,7 @@ const Recipes = () => {
   const [filterType, setFilterType] = useState<string | null>(null);
   const user = useAuth();
   const { recipes, removeRecipe, addRecipeToWishlist } = useShoppingList();
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter(); 
 
   useEffect(() => {
     fetchRecipes();
