@@ -1,7 +1,7 @@
 "use client";
 
 import { Recipe } from "@/types/types";
-import { ChevronRight, Refrigerator, Search } from "lucide-react";
+import { ChevronRight, CookingPot, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useShoppingList } from "@/context/shoppingListContext.context";
 import CustomAlertDialog from "./AlertDialog";
@@ -53,8 +53,8 @@ export default function RecipesSideBar() {
     <div className="fixed right-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-lg rounded-lg overflow-hidden">
       <div className="p-4 bg-yellow-400">
         <h2 className="flex items-center text-2xl font-bold text-white">
-            <Refrigerator className="mr-2"/>
-            My Fridge
+            <CookingPot className="mr-2"/>
+            My recipes
           </h2>
       </div>
       <div className="p-4">

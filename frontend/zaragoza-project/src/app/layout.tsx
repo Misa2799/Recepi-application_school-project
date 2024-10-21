@@ -30,16 +30,17 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <FridgeProvider>
-      <ShoppingListProvider>
-
-        <html lang="en">
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            <Header />
-            {children}
-          </body>
-        </html>
+        <ShoppingListProvider>
+          <html lang="en">
+            <body
+              className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-screen`}
+            >
+              <Header />
+              <div className="flex-1 overflow-auto">
+                {children}
+              </div>
+            </body>
+          </html>
         </ShoppingListProvider>
       </FridgeProvider>
     </ClerkProvider>

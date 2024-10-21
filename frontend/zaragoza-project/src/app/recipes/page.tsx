@@ -1,14 +1,13 @@
 "use client";
 
-import FridgeSideBar from "@/components/fridgeSideBar";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getRecipesList } from "../actions";
 import { useAuth } from "@clerk/nextjs";
 import { Recipe } from "@/types/types";
 import { addWishlist, getWishlist } from "./actions";
-import RecipesSideBar from "@/components/recipesSideBar";
 import { useShoppingList } from "@/context/shoppingListContext.context";
 import { useRouter } from "next/navigation"; // Import useRouter
+import { ScrollArea } from "@/components/ui/scroll-area"; // Import ScrollArea
 
 const Recipes = () => {
   const [recipesList, setRecipes] = useState<Recipe[]>([]);
@@ -55,24 +54,21 @@ const Recipes = () => {
     : recipesList;
 
   return (
-    <div className="flex gap-4 p-4">
-      <div id="sideBar" className="col-span-3">
-        <FridgeSideBar />
-      </div>
-      <div className="flex-1 mr-80">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-          <div className="flex-1 mb-4 md:mb-0 md:mr-4">
-            <input
-              type="text"
-              placeholder="Search Recipes"
-              className="w-full p-2 border border-gray-300 rounded"
-            />
-          </div>
-          <div className="bg-gray-100 p-4 rounded w-full md:w-auto">
-            <p className="font-semibold">Filter Area for recipes</p>
-            {/* Filters go here */}
-          </div>
+    <div className="flex flex-col h-full">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+        <div className="flex-1 mb-4 md:mb-0 md:mr-4">
+          <input
+            type="text"
+            placeholder="Search Recipes"
+            className="w-full p-2 border border-gray-300 rounded"
+          />
         </div>
+        <div className="bg-gray-100 p-4 rounded w-full md:w-auto">
+          <p className="font-semibold">Filter Area for recipes</p>
+          {/* Filters go here */}
+        </div>
+      </div>
+      <ScrollArea className="flex-1">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           {displayedRecipes.map((recipe) => (
             <div key={recipe.id} className="border border-gray-300 p-4 rounded shadow">
@@ -103,12 +99,7 @@ const Recipes = () => {
             </div>
           ))}
         </div>
-      </div>
-      <div className="fixed right-0 top-16 h-[calc(100vh-4rem)]">
-        <Suspense fallback={<div className="flex h-screen">Loading...</div>}>
-          <RecipesSideBar />
-        </Suspense>
-      </div>
+      </ScrollArea>
     </div>
   );
 };

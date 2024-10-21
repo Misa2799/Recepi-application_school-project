@@ -1,16 +1,17 @@
 'use client'
 import FridgeSideBar from "@/components/fridgeSideBar";
 import ItemsList from "@/components/itemsList";
+import RecipesSideBar from "@/components/recipesSideBar";
 import { useAuth } from "@clerk/nextjs";
 
-export default function ShoppingListLayout({
+export default function RecipesListLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const user = useAuth();
   return (user.userId ? (
-<div className="grid grid-cols-12 gap-4 h-full">
+    <div className="grid grid-cols-12 gap-4 h-full">
       <div className="col-span-2">
         <FridgeSideBar />
       </div>
@@ -18,7 +19,7 @@ export default function ShoppingListLayout({
         {children}
       </div>
       <div className="col-span-2">
-        <ItemsList />
+        <RecipesSideBar />
       </div>
     </div>
   ) : (

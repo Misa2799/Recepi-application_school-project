@@ -43,7 +43,7 @@ export default function FridgeSideBar() {
   };
 
   return (
-    <div className=" h-[calc(100vh-5rem)] w-full bg-white shadow-lg rounded-lg overflow-hidden">
+    <div className=" h-[calc(100vh-5rem)] w-full bg-white shadow-lg rounded-lg overflow-hidden mt-1">
         <div className="p-4 bg-yellow-400">
           <h2 className="flex items-center text-2xl font-bold text-white">
             <Refrigerator className="mr-2"/>
