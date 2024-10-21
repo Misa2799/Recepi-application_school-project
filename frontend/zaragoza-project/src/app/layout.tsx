@@ -29,8 +29,8 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <FridgeProvider>
         <ShoppingListProvider>
+          <FridgeProvider>
           <html lang="en">
             <body
               className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-screen`}
@@ -41,8 +41,8 @@ export default function RootLayout({
               </div>
             </body>
           </html>
+          </FridgeProvider>
         </ShoppingListProvider>
-      </FridgeProvider>
     </ClerkProvider>
   );
 }

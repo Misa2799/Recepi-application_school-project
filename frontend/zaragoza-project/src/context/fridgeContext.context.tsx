@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 import { useAuth } from '@clerk/nextjs';
 import { addInventoryItem, fetchFridgeItems, updateInventoryItem, removeInventoryItem } from '@/app/recipes/actions';
 import { IngredientInterface } from '@/models/inventory';
+import { useShoppingList } from '@/context/shoppingListContext.context';
 
 const initialState = {
   fridgeItems: [],
@@ -25,6 +26,7 @@ const FridgeContext = createContext<FridgeContextType>(initialState);
 export const FridgeProvider = ({ children }: { children: ReactNode }) => {
   const [fridgeItems, setFridgeItems] = useState<IngredientInterface[]>([]);
   const { userId } = useAuth();
+  const { shoppingList, removeItem } = useShoppingList();
 
   useEffect(() => {
     fetchFridge();
@@ -36,7 +38,10 @@ export const FridgeProvider = ({ children }: { children: ReactNode }) => {
     }
     const fetchedFridge = await fetchFridgeItems(userId);
     if (fetchedFridge) {
-      setFridgeItems(fetchedFridge);
+      const fetchItemsMoreThanZero = fetchedFridge.filter(
+        (item: any) => item.amount > 0
+      );
+      setFridgeItems(fetchItemsMoreThanZero);
     }
   };
 
@@ -48,10 +53,16 @@ export const FridgeProvider = ({ children }: { children: ReactNode }) => {
     if (existingItem) {
       await addInventoryItem(userId, [item]);
       updateFridgeItem(item.name, item.amount + existingItem.amount);
-      return;
+    } else {
+      await addInventoryItem(userId, [item]);
+      setFridgeItems((prevItems) => [...prevItems, item]);
     }
-    await addInventoryItem(userId, [item]);
-    setFridgeItems((prevItems) => [...prevItems, item]);
+
+    // Check if the item is in the shopping list and remove it if it is
+    const itemInShoppingList = shoppingList.find((shoppingItem) => shoppingItem.name === item.name);
+    if (itemInShoppingList) {
+      removeItem(item.name);
+    }
   };
 
   const updateFridgeItem = async (name: string, amount: number) => {

@@ -13,8 +13,9 @@ const Recipes = () => {
   const [recipesList, setRecipes] = useState<Recipe[]>([]);
   const [filteredCuisine, setFilteredCuisine] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string | null>(null);
+  const [showOnlyFridgeIngredients, setShowOnlyFridgeIngredients] = useState<boolean>(false);
   const user = useAuth();
-  const { recipes, removeRecipe, addRecipeToWishlist } = useShoppingList();
+  const { recipes, removeRecipe, addRecipeToWishlist, items } = useShoppingList();
   const router = useRouter(); 
 
   useEffect(() => {
@@ -49,9 +50,20 @@ const Recipes = () => {
     setFilterType(null);
   };
 
-  const displayedRecipes = filteredCuisine
-    ? recipesList.filter((recipe) => recipe.cuisine === filteredCuisine)
-    : recipesList;
+  const handleCheckboxChange = () => {
+    setShowOnlyFridgeIngredients(!showOnlyFridgeIngredients);
+  };
+
+  const displayedRecipes = recipesList.filter((recipe) => {
+    if (filteredCuisine && recipe.cuisine !== filteredCuisine) {
+      return false;
+    }
+    if (showOnlyFridgeIngredients) {
+      const fridgeIngredients = items.map(item => item.name.toLowerCase());
+      return recipe.ingredients.every(ingredient => fridgeIngredients.includes(ingredient.toLowerCase()));
+    }
+    return true;
+  });
 
   return (
     <div className="flex flex-col h-full">
@@ -65,7 +77,19 @@ const Recipes = () => {
         </div>
         <div className="bg-gray-100 p-4 rounded w-full md:w-auto">
           <p className="font-semibold">Filter Area for recipes</p>
-          {/* Filters go here */}
+          <div className="flex items-center mt-2">
+            <input
+              type="checkbox"
+              id="fridge-ingredients"
+              checked={showOnlyFridgeIngredients}
+              onChange={handleCheckboxChange}
+              className="mr-2"
+            />
+            <label htmlFor="fridge-ingredients" className="text-sm text-gray-600">
+              Show only recipes with ingredients in the fridge
+            </label>
+          </div>
+          {/* Additional filters can go here */}
         </div>
       </div>
       <ScrollArea className="flex-1">
