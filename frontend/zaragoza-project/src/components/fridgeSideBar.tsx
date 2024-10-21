@@ -2,7 +2,7 @@
 
 import { useFridge } from '@/context/fridgeContext.context';
 import { IngredientInterface } from '@/models/inventory';
-import { CalendarIcon, Minus, Plus, Refrigerator, Trash } from 'lucide-react';
+import { CalendarIcon, Minus, Plus, Refrigerator, Search, Trash } from 'lucide-react';
 import { format } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { Input } from './ui/input';
@@ -11,6 +11,7 @@ import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Calendar } from './ui/calendar';
+import { ScrollArea } from './ui/scroll-area';
 
 export default function FridgeSideBar() {
   const { fridgeItems, addFridgeItem, updateFridgeItem, removeFridgeItem } = useFridge();
@@ -19,7 +20,7 @@ export default function FridgeSideBar() {
   const [quantity, setQuantity] = useState(1);
   const [filteredItems, setFilteredItems] = useState<IngredientInterface[]>([]);
   const [expiry, setExpiry] = useState<Date | undefined>(undefined);
-	const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (fridgeItems) {
@@ -31,7 +32,6 @@ export default function FridgeSideBar() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ name, quantity, expiry });
     if (name) {
       addFridgeItem({ name, amount: quantity });
       setName("");
@@ -42,20 +42,24 @@ export default function FridgeSideBar() {
   };
 
   return (
-    <div className="flex h-screen">
-      <div className="w-72 bg-white p-6">
-        <h2 className="text-2xl font-bold mb-6 flex items-center text-yellow-400">
-          <Refrigerator className="mr-2" />
-          My Fridge
-        </h2>
-        <div className="flex space-x-2 mb-4">
+    <div className=" h-[calc(100vh-5rem)] w-full bg-white shadow-lg rounded-lg overflow-hidden mt-1">
+        <div className="p-4 bg-yellow-400">
+          <h2 className="flex items-center text-2xl font-bold text-white">
+            <Refrigerator className="mr-2"/>
+            My Fridge
+          </h2>
+        </div>
+        <div className="flex space-x-2 mb-4 p-4">
+          <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
             type="text"
-            placeholder="Search Fridge"
-            className="flex-grow"
+            placeholder="Search recipes..."
+            className="pl-10 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button variant="outline">Add</Button>
@@ -140,43 +144,41 @@ export default function FridgeSideBar() {
             </DialogContent>
           </Dialog>
         </div>
-        <ul className="space-y-2">
-          {filteredItems.map((foodItem, index) => (
-            <li
-              key={foodItem.name}
-              className="flex items-center justify-between bg-secondary p-2 rounded"
-            >
-              <span>{foodItem.name}</span>
+        <ScrollArea className="h-[calc(100vh-200px)]">
+        <div className="p-4">
+          {filteredItems.map((foodItem) => (
+            <div key={foodItem.name} className="flex items-center justify-between py-2 hover:bg-gray-100 rounded-md px-2">
+              <div>
+                <p className="font-medium">{foodItem.name}</p>
+                <p className="text-sm text-gray-500">Quantity: {foodItem.amount}</p>
+              </div>
               <div className="flex items-center space-x-2">
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
                   onClick={() => updateFridgeItem(foodItem.name, foodItem.amount - 1)}
                 >
                   <Minus className="h-4 w-4" />
-                  <span className="sr-only">Decrease</span>
                 </Button>
-                <span className="w-8 text-center">{foodItem.amount}</span>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
                   onClick={() => updateFridgeItem(foodItem.name, foodItem.amount + 1)}
                 >
                   <Plus className="h-4 w-4" />
-                  <span className="sr-only">Increase</span>
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
                   onClick={() => removeFridgeItem(foodItem.name)}
-                > 
-                  <Trash className="h-4 w-4" />
+                >
+                  <Trash className="h-4 w-4 text-red-500" />
                 </Button>
               </div>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
+      </ScrollArea>
       </div>
-    </div>
   );
 }

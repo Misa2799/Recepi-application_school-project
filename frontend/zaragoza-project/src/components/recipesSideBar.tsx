@@ -1,13 +1,14 @@
 "use client";
 
 import { Recipe } from "@/types/types";
-import { ChevronRight, Search } from "lucide-react";
+import { ChevronRight, CookingPot, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useShoppingList } from "@/context/shoppingListContext.context";
 import CustomAlertDialog from "./AlertDialog";
 import { ScrollArea } from "./ui/scroll-area";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { useRouter } from "next/navigation";
 
 export default function RecipesSideBar() {
   const [foodItems, setFoodItems] = useState<Recipe[]>([]);
@@ -16,6 +17,7 @@ export default function RecipesSideBar() {
   const { recipes, removeRecipe } = useShoppingList();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchWishlistRecipes = async () => {
@@ -52,7 +54,10 @@ export default function RecipesSideBar() {
   return (
     <div className="fixed right-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-lg rounded-lg overflow-hidden">
       <div className="p-4 bg-yellow-400">
-        <h2 className="text-2xl font-bold text-white">My Recipes</h2>
+        <h2 className="flex items-center text-2xl font-bold text-white">
+            <CookingPot className="mr-2"/>
+            My recipes
+          </h2>
       </div>
       <div className="p-4">
         <div className="relative">
@@ -75,8 +80,8 @@ export default function RecipesSideBar() {
                 <p className="text-sm text-gray-500">{recipe.cuisine}</p>
               </div>
               <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <ChevronRight className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-8 w-8"  onClick={()=> router.push('/recipes/details?recipeId='+recipe.id)} >
+                  <ChevronRight className="h-4 w-4"/>
                 </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleRemoveClick(recipe.id)}>
                   <span className="text-red-500">X</span>

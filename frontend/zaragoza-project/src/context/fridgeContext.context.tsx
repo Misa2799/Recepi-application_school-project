@@ -1,8 +1,9 @@
 'use client'
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useAuth } from '@clerk/nextjs';
-import { fetchFridgeItems } from '@/app/recipes/actions';
+import { addInventoryItem, fetchFridgeItems, updateInventoryItem, removeInventoryItem } from '@/app/recipes/actions';
 import { IngredientInterface } from '@/models/inventory';
+import { useShoppingList } from '@/context/shoppingListContext.context';
 
 const initialState = {
   fridgeItems: [],
@@ -25,6 +26,7 @@ const FridgeContext = createContext<FridgeContextType>(initialState);
 export const FridgeProvider = ({ children }: { children: ReactNode }) => {
   const [fridgeItems, setFridgeItems] = useState<IngredientInterface[]>([]);
   const { userId } = useAuth();
+  const { shoppingList, removeItem } = useShoppingList();
 
   useEffect(() => {
     fetchFridge();
@@ -36,19 +38,42 @@ export const FridgeProvider = ({ children }: { children: ReactNode }) => {
     }
     const fetchedFridge = await fetchFridgeItems(userId);
     if (fetchedFridge) {
-      setFridgeItems(fetchedFridge);
+      const fetchItemsMoreThanZero = fetchedFridge.filter(
+        (item: any) => item.amount > 0
+      );
+      setFridgeItems(fetchItemsMoreThanZero);
     }
   };
 
-  const addFridgeItem = (item: IngredientInterface) => {
-    setFridgeItems((prevItems) => [...prevItems, item]);
+  const addFridgeItem = async (item: IngredientInterface) => {
+    if (!userId) {
+      return;
+    }
+    const existingItem = fridgeItems.find((fridgeItem) => fridgeItem.name === item.name);
+    if (existingItem) {
+      await addInventoryItem(userId, [item]);
+      updateFridgeItem(item.name, item.amount + existingItem.amount);
+    } else {
+      await addInventoryItem(userId, [item]);
+      setFridgeItems((prevItems) => [...prevItems, item]);
+    }
+
+    // Check if the item is in the shopping list and remove it if it is
+    const itemInShoppingList = shoppingList.find((shoppingItem) => shoppingItem.name === item.name);
+    if (itemInShoppingList) {
+      removeItem(item.name);
+    }
   };
 
-  const updateFridgeItem = (name: string, amount: number) => {
+  const updateFridgeItem = async (name: string, amount: number) => {
+    if (!userId) {
+      return;
+    }
     if (amount <= 0) {
       removeFridgeItem(name);
       return;
     }
+    await updateInventoryItem(userId, name, amount);
     setFridgeItems((prevItems) =>
       prevItems.map((item) =>
         item.name === name ? { ...item, amount } : item
@@ -56,11 +81,14 @@ export const FridgeProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  const removeFridgeItem = (name: string) => {
+  const removeFridgeItem = async (name: string) => {
+    if (!userId) {
+      return;
+    }
+    await removeInventoryItem(userId, name);
     setFridgeItems((prevItems) =>
       prevItems.filter((item) => item.name !== name)
     );
-    // Update DB
   };
 
   return (

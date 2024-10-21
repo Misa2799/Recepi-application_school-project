@@ -10,7 +10,7 @@ import { Recipe } from "@/types/types";
 import { useRouter } from "next/navigation";
 import { IngredientInterface } from "@/models/inventory";
 import { useAuth } from "@clerk/nextjs";
-import { getWishlist, fetchFridgeItems, removeWishlist, addWishlist } from "@/app/recipes/actions";
+import { getWishlist, fetchFridgeItems, removeWishlist, addWishlist, addInventoryItem } from "@/app/recipes/actions";
 
 type ShoppingListContextType = {
   recipes: Recipe[];
@@ -20,7 +20,7 @@ type ShoppingListContextType = {
   addMissingItems: (id: number) => void;
   removeRecipe: (id: number) => void;
   removeItem: (name: string) => void;
-  addRecipeToWishlist: (recipe: Recipe) => void; // Add this line
+  addRecipeToWishlist: (recipe: Recipe) => void;
 };
 
 const ShoppingListContext = createContext<ShoppingListContextType | undefined>(
@@ -44,12 +44,14 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [items, setItems] = useState<IngredientInterface[]>([]);
   const [shoppingList, setShoppingList] = useState<IngredientInterface[]>([]);
+  const router = useRouter();
 
   // get all recipes in WishList table
   useEffect(() => {
     fetchWishlist();
+    fetchFridgeList();
   }, [userId]);
-
+  
   const fetchWishlist = async () => {
     if (!userId) {
       return;
@@ -60,19 +62,13 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  // get all items that a user needs to buy
-  useEffect(() => {
-    fetchFridge();
-  }, [userId]);
-
-  const fetchFridge = async () => {
+  const fetchFridgeList = async () => {
     if (!userId) {
       return;
     }
     const fetchedFridge = await fetchFridgeItems(userId);
     if (fetchedFridge) {
       setItems(fetchedFridge);
-
       const shoppingListItems = fetchedFridge.filter(
         (item: any) => item.amount === 0
       );
@@ -80,13 +76,11 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const router = useRouter();
-
   const viewRecipe = (id: number) => {
-    router.push(`/shopping-list/${id}`);
+    router.push(`/shopping-list/details?recipeId=${id}`);
   };
 
-  const addMissingItems = (id: number) => {
+  const addMissingItems = async (id: number) => {
     const recipe = recipes.find((r) => r.id === id);
     if (!recipe) return;
 
@@ -100,13 +94,19 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
       amount: 0,
     }));
 
+    // Add missing items to MongoDB
+    if (userId) {
+      await addInventoryItem(userId, newItems);
+    }
+
     setItems((prevItems) => [...prevItems, ...newItems]);
+    setShoppingList((prevList) => [...prevList, ...newItems]);
   };
 
-  const removeRecipe = (id: number) => {
+  const removeRecipe = async (id: number) => {
     if (!userId) return;
-    const removed = removeWishlist(userId, id.toString());
-    if(!removed) return;
+    const removed = await removeWishlist(userId, id.toString());
+    if (!removed) return;
     setRecipes((prevRecipes) =>
       prevRecipes.filter((recipe) => recipe.id !== id)
     );
@@ -114,9 +114,10 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
 
   const removeItem = (name: string) => {
     setItems((prevItems) => prevItems.filter((item) => item.name !== name));
+    setShoppingList((prevList) => prevList.filter((item) => item.name !== name));
   };
 
-  const addRecipeToWishlist = (recipe: Recipe) => { // Add this function
+  const addRecipeToWishlist = (recipe: Recipe) => {
     setRecipes((prevRecipes) => [...prevRecipes, recipe]);
   };
 
@@ -130,7 +131,7 @@ export const ShoppingListProvider: React.FC<{ children: ReactNode }> = ({
         addMissingItems,
         removeRecipe,
         removeItem,
-        addRecipeToWishlist, // Add this line
+        addRecipeToWishlist,
       }}
     >
       {children}

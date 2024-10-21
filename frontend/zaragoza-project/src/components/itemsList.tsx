@@ -1,19 +1,22 @@
-import { Minus, Refrigerator } from "lucide-react";
+import { Minus, ShoppingBasket } from "lucide-react";
 import React from "react";
 import { Button } from "./ui/button";
 import { useShoppingList } from "@/context/shoppingListContext.context";
+import { ScrollArea } from "./ui/scroll-area";
 
 export default function ItemsList() {
   const { shoppingList, removeItem } = useShoppingList();
-
+  
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold flex items-center text-yellow-400">
-        <Refrigerator className="mr-2" />
-        Items to Buy
-      </h2>
+    <div className=" h-[calc(100vh-5rem)] w-full bg-white shadow-lg rounded-lg overflow-hidden mt-1">
+        <div className="p-4 bg-yellow-400">
+          <h2 className="flex items-center text-2xl font-bold text-white">
+            <ShoppingBasket className="mr-2"/>
+             Items to buy
+          </h2>
+        </div>
 
-      <ul className="mt-6 space-y-2">
+        <ScrollArea className="h-[calc(100vh-150px)]">
         {shoppingList.map((item, index) => (
           <li
             key={index}
@@ -31,7 +34,7 @@ export default function ItemsList() {
             </div>
           </li>
         ))}
-      </ul>
+      </ScrollArea>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getRecipesList} from '@/app/actions'
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const recipeCategories = [
   "All",
@@ -28,11 +29,11 @@ export default function HomePage() {
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
   const [currentCategory, setCurrentCategory] = useState("All");
   const [currentIndex, setCurrentIndex] = useState(0);
+  const router = useRouter();
 
   const fetchRecipes = async () => {
     const fetchedTasks = await getRecipesList();
     const recipes = fetchedTasks.recipes;
-
     setRecipesData(recipes);
 
     const uniqueRecipes: Recipe[] = [];
@@ -139,7 +140,6 @@ export default function HomePage() {
         </div>
 
         <h2 className="text-2xl font-bold mb-4">Explore More Recipes</h2>
-        <a href="/shopping-list">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {filteredRecipes.map((recipe) => (
               <div
@@ -150,6 +150,7 @@ export default function HomePage() {
                   src={recipe.image}
                   alt={recipe.name || "Recipe Image"}
                   className="w-full h-48 object-cover"
+                  onClick={() => router.push(`/recipes/details?recipeId=${recipe.id}`)}
                 />
                 <div className="p-4">
                   <h3 className="text-lg font-semibold">{recipe.name}</h3>
@@ -157,7 +158,6 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-        </a>
       </main>
     </div>
   );
